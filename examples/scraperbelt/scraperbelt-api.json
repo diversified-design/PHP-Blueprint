@@ -1,0 +1,1936 @@
+{
+    "ScraperBelt\\ScrapeLogger\\ZipRotatingFileHandler": {
+        "name": "ScraperBelt\\ScrapeLogger\\ZipRotatingFileHandler",
+        "shortName": "ZipRotatingFileHandler",
+        "namespace": "ScraperBelt\\ScrapeLogger",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": "Extends Symfony's RotatingFileHandler to create a gzipped copy of the log file before removing it.\nStores logs to files that are rotated every day and a limited number of files are kept…\n… unzipped.\nOriginal:\n@author Christophe Coevoet <stof@notk.org>\n@author Jordi Boggiano <j.boggiano@seld.be>",
+        "extends": "Monolog\\Handler\\RotatingFileHandler",
+        "implements": [
+            "Monolog\\Handler\\FormattableHandlerInterface",
+            "Monolog\\Handler\\ProcessableHandlerInterface",
+            "Monolog\\ResettableInterface",
+            "Monolog\\Handler\\HandlerInterface"
+        ],
+        "constants": [
+            {
+                "name": "FILE_PER_DAY",
+                "value": "Y-m-d",
+                "visibility": "public"
+            },
+            {
+                "name": "FILE_PER_MONTH",
+                "value": "Y-m",
+                "visibility": "public"
+            },
+            {
+                "name": "FILE_PER_YEAR",
+                "value": "Y",
+                "visibility": "public"
+            },
+            {
+                "name": "MAX_CHUNK_SIZE",
+                "value": 2147483647,
+                "visibility": "protected"
+            },
+            {
+                "name": "DEFAULT_CHUNK_SIZE",
+                "value": 10485760,
+                "visibility": "protected"
+            }
+        ],
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@param int      $maxFiles       The maximal amount of files to keep (0 means unlimited)\n@param int|null $filePermission Optional file permissions (default (0644) are only for owner read/write)\n@param bool     $useLocking     Try to lock log file before doing any writes",
+                "parameters": [
+                    {
+                        "name": "filename",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "maxFiles",
+                        "position": 1,
+                        "type": "int",
+                        "optional": true,
+                        "default": 0
+                    },
+                    {
+                        "name": "level",
+                        "position": 2,
+                        "type": "Monolog\\Level|string|int",
+                        "optional": true,
+                        "default": 100
+                    },
+                    {
+                        "name": "bubble",
+                        "position": 3,
+                        "type": "bool",
+                        "optional": true,
+                        "default": true
+                    },
+                    {
+                        "name": "filePermission",
+                        "position": 4,
+                        "type": "?int",
+                        "optional": true,
+                        "default": null
+                    },
+                    {
+                        "name": "useLocking",
+                        "position": 5,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    },
+                    {
+                        "name": "dateFormat",
+                        "position": 6,
+                        "type": "string",
+                        "optional": true,
+                        "default": "Y-m-d"
+                    },
+                    {
+                        "name": "filenameFormat",
+                        "position": 7,
+                        "type": "string",
+                        "optional": true,
+                        "default": "{filename}-{date}"
+                    }
+                ]
+            },
+            {
+                "name": "close",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "returnType": "void"
+            },
+            {
+                "name": "reset",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "returnType": "void"
+            },
+            {
+                "name": "setFilenameFormat",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@return $this",
+                "parameters": [
+                    {
+                        "name": "filenameFormat",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "dateFormat",
+                        "position": 1,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "self"
+            },
+            {
+                "name": "getStream",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Return the currently active stream if it is open\n@return resource|null"
+            },
+            {
+                "name": "getUrl",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Return the stream URL if it was configured with a URL and not an active resource",
+                "returnType": "?string"
+            },
+            {
+                "name": "getStreamChunkSize",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "int"
+            },
+            {
+                "name": "handle",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "position": 0,
+                        "type": "Monolog\\LogRecord"
+                    }
+                ],
+                "returnType": "bool"
+            },
+            {
+                "name": "isHandling",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "position": 0,
+                        "type": "Monolog\\LogRecord"
+                    }
+                ],
+                "returnType": "bool"
+            },
+            {
+                "name": "setLevel",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Sets minimum logging level at which this handler will be triggered.\n@param  Level|LogLevel::* $level Level or level name\n@return $this\n@phpstan-param value-of<Level::VALUES>|value-of<Level::NAMES>|Level|LogLevel::* $level",
+                "parameters": [
+                    {
+                        "name": "level",
+                        "position": 0,
+                        "type": "Monolog\\Level|string|int"
+                    }
+                ],
+                "returnType": "self"
+            },
+            {
+                "name": "getLevel",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Gets minimum logging level at which this handler will be triggered.",
+                "returnType": "Monolog\\Level"
+            },
+            {
+                "name": "setBubble",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Sets the bubbling behavior.\n@param  bool  $bubble true means that this handler allows bubbling.\n                      false means that bubbling is not permitted.\n@return $this",
+                "parameters": [
+                    {
+                        "name": "bubble",
+                        "position": 0,
+                        "type": "bool"
+                    }
+                ],
+                "returnType": "self"
+            },
+            {
+                "name": "getBubble",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Gets the bubbling behavior.\n@return bool true means that this handler allows bubbling.\n             false means that bubbling is not permitted.",
+                "returnType": "bool"
+            },
+            {
+                "name": "handleBatch",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "parameters": [
+                    {
+                        "name": "records",
+                        "position": 0,
+                        "type": "array"
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "__destruct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null
+            },
+            {
+                "name": "__sleep",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null
+            },
+            {
+                "name": "pushProcessor",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "parameters": [
+                    {
+                        "name": "callback",
+                        "position": 0,
+                        "type": "callable"
+                    }
+                ],
+                "returnType": "Monolog\\Handler\\HandlerInterface"
+            },
+            {
+                "name": "popProcessor",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "returnType": "callable"
+            },
+            {
+                "name": "setFormatter",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "parameters": [
+                    {
+                        "name": "formatter",
+                        "position": 0,
+                        "type": "Monolog\\Formatter\\FormatterInterface"
+                    }
+                ],
+                "returnType": "Monolog\\Handler\\HandlerInterface"
+            },
+            {
+                "name": "getFormatter",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@inheritDoc",
+                "returnType": "Monolog\\Formatter\\FormatterInterface"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\NullScrapeLogger": {
+        "name": "ScraperBelt\\ScrapeLogger\\NullScrapeLogger",
+        "shortName": "NullScrapeLogger",
+        "namespace": "ScraperBelt\\ScrapeLogger",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "extends": "Psr\\Log\\NullLogger",
+        "implements": [
+            "Psr\\Log\\LoggerInterface"
+        ],
+        "methods": [
+            {
+                "name": "justLog",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "NOOP: Logs a message with the specified log level.\n@param mixed $logLevel — The log level (a Monolog, PSR-3 or RFC 5424 level)\n@param string $message The message to log.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "string",
+                        "optional": true,
+                        "default": ""
+                    },
+                    {
+                        "name": "logLevel",
+                        "position": 1,
+                        "type": "mixed",
+                        "optional": true,
+                        "default": 200
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "handleException",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "NOOP: Handles exceptions by logging them.\n@param \\Throwable $e The exception to handle.\n@param string $logLevel The log level to use.\n@param bool $exceptionLogged Reference to a boolean indicating if the exception has been logged.\n@param array<mixed> $context Additional context for the log message.\n@param int $errorCode An optional error code.\n@throws \\Throwable Rethrows the original exception.",
+                "parameters": [
+                    {
+                        "name": "e",
+                        "position": 0,
+                        "type": "Throwable"
+                    },
+                    {
+                        "name": "logLevel",
+                        "position": 1,
+                        "type": "string",
+                        "optional": true,
+                        "default": "error"
+                    },
+                    {
+                        "name": "exceptionLogged",
+                        "position": 2,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    },
+                    {
+                        "name": "context",
+                        "position": 3,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    },
+                    {
+                        "name": "errorCode",
+                        "position": 4,
+                        "type": "int",
+                        "optional": true,
+                        "default": 0
+                    },
+                    {
+                        "name": "throwException",
+                        "position": 5,
+                        "type": "bool",
+                        "optional": true,
+                        "default": true
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "log",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Logs with an arbitrary level.\n@param mixed[] $context\n@throws \\Psr\\Log\\InvalidArgumentException",
+                "parameters": [
+                    {
+                        "name": "level",
+                        "position": 0
+                    },
+                    {
+                        "name": "message",
+                        "position": 1,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 2,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "emergency",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "System is unusable.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "alert",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Action must be taken immediately.\nExample: Entire website down, database unavailable, etc. This should\ntrigger the SMS alerts and wake you up.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "critical",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Critical conditions.\nExample: Application component unavailable, unexpected exception.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "error",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Runtime errors that do not require immediate action but should typically\nbe logged and monitored.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "warning",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Exceptional occurrences that are not errors.\nExample: Use of deprecated APIs, poor use of an API, undesirable things\nthat are not necessarily wrong.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "notice",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Normal but significant events.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "info",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Interesting events.\nExample: User logs in, SQL logs.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "debug",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Detailed debug information.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\ScrapeLogger": {
+        "name": "ScraperBelt\\ScrapeLogger\\ScrapeLogger",
+        "shortName": "ScrapeLogger",
+        "namespace": "ScraperBelt\\ScrapeLogger",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "extends": "Psr\\Log\\AbstractLogger",
+        "implements": [
+            "Psr\\Log\\LoggerInterface"
+        ],
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "ScrapeLogger constructor.\n@param array<mixed> $config Configuration options for the logger.\n@throws \\RuntimeException If there is an error creating the logger or handlers.",
+                "parameters": [
+                    {
+                        "name": "config",
+                        "position": 0,
+                        "type": "array"
+                    }
+                ]
+            },
+            {
+                "name": "justLog",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Logs a message with the specified log level.\n@param mixed $logLevel — The log level (a Monolog, PSR-3 or RFC 5424 level)\n@param string $message The message to log.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "logLevel",
+                        "position": 1,
+                        "type": "mixed",
+                        "optional": true,
+                        "default": 200
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "handleException",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Logs an exception and rethrows it as a ScrapeException.\n@param \\Throwable $e The original exception.\n@param mixed $logLevel — The log level (a Monolog, PSR-3 or RFC 5424 level)\n@param bool &$exceptionLogged A flag to prevent duplicate logging.\n@param array<mixed> $context Additional context for the log.\n@throws \\Throwable Rethrows the original exception after logging.",
+                "parameters": [
+                    {
+                        "name": "e",
+                        "position": 0,
+                        "type": "Throwable"
+                    },
+                    {
+                        "name": "logLevel",
+                        "position": 1,
+                        "type": "mixed",
+                        "optional": true,
+                        "default": 400
+                    },
+                    {
+                        "name": "exceptionLogged",
+                        "position": 2,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    },
+                    {
+                        "name": "context",
+                        "position": 3,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    },
+                    {
+                        "name": "throwException",
+                        "position": 4,
+                        "type": "bool",
+                        "optional": true,
+                        "default": true
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "log",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "level",
+                        "position": 0,
+                        "type": "mixed"
+                    },
+                    {
+                        "name": "message",
+                        "position": 1,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 2,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "emergency",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "alert",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "critical",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "error",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "warning",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "notice",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "info",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "debug",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "Stringable|string"
+                    },
+                    {
+                        "name": "context",
+                        "position": 1,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ],
+                "returnType": "void"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\ScrapeException": {
+        "name": "ScraperBelt\\ScrapeLogger\\ScrapeException",
+        "shortName": "ScrapeException",
+        "namespace": "ScraperBelt\\ScrapeLogger",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "extends": "Exception",
+        "implements": [
+            "Throwable",
+            "Stringable"
+        ],
+        "constants": [
+            {
+                "name": "ERROR_CODE_FETCH",
+                "value": 1001,
+                "visibility": "public"
+            },
+            {
+                "name": "ERROR_CODE_SAVE",
+                "value": 1002,
+                "visibility": "public"
+            },
+            {
+                "name": "ERROR_CODE_PARSE",
+                "value": 1003,
+                "visibility": "public"
+            },
+            {
+                "name": "ERROR_CODE_VALIDATION",
+                "value": 1004,
+                "visibility": "public"
+            },
+            {
+                "name": "ERROR_CODE_FILE_SYSTEM",
+                "value": 1005,
+                "visibility": "public"
+            },
+            {
+                "name": "ERROR_CODE_LOGGING",
+                "value": 1006,
+                "visibility": "public"
+            }
+        ],
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Constructor for ScrapeException.\n@param string $message The error message.\n@param int $code The error code.\n@param Throwable|null $previous The previous exception, if any.\n@param array<mixed> $context Additional context for the exception.",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "position": 0,
+                        "type": "string",
+                        "optional": true,
+                        "default": ""
+                    },
+                    {
+                        "name": "code",
+                        "position": 1,
+                        "type": "int",
+                        "optional": true,
+                        "default": 0
+                    },
+                    {
+                        "name": "previous",
+                        "position": 2,
+                        "type": "?Throwable",
+                        "optional": true,
+                        "default": null
+                    },
+                    {
+                        "name": "context",
+                        "position": 3,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    }
+                ]
+            },
+            {
+                "name": "getContext",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Get the context of the exception.\n@return array<mixed> The context of the exception.",
+                "returnType": "array"
+            },
+            {
+                "name": "__wakeup",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null
+            },
+            {
+                "name": "getMessage",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null,
+                "returnType": "string"
+            },
+            {
+                "name": "getCode",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null
+            },
+            {
+                "name": "getFile",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null,
+                "returnType": "string"
+            },
+            {
+                "name": "getLine",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null,
+                "returnType": "int"
+            },
+            {
+                "name": "getTrace",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null,
+                "returnType": "array"
+            },
+            {
+                "name": "getPrevious",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null,
+                "returnType": "?Throwable"
+            },
+            {
+                "name": "getTraceAsString",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": true,
+                "docblock": null,
+                "returnType": "string"
+            },
+            {
+                "name": "__toString",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "string"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeFetcher\\TryAgain": {
+        "name": "ScraperBelt\\ScrapeFetcher\\TryAgain",
+        "shortName": "TryAgain",
+        "namespace": "ScraperBelt\\ScrapeFetcher",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "implements": [
+            "Symfony\\Component\\HttpClient\\Retry\\RetryStrategyInterface"
+        ],
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "max_retries",
+                        "position": 0,
+                        "type": "int"
+                    },
+                    {
+                        "name": "retry_delay",
+                        "position": 1,
+                        "type": "int"
+                    },
+                    {
+                        "name": "logger",
+                        "position": 2,
+                        "type": "ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger"
+                    }
+                ]
+            },
+            {
+                "name": "shouldRetry",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "context",
+                        "position": 0,
+                        "type": "Symfony\\Component\\HttpClient\\Response\\AsyncContext"
+                    },
+                    {
+                        "name": "responseContent",
+                        "position": 1,
+                        "type": "?string"
+                    },
+                    {
+                        "name": "exception",
+                        "position": 2,
+                        "type": "?Symfony\\Contracts\\HttpClient\\Exception\\TransportExceptionInterface"
+                    }
+                ],
+                "returnType": "?bool"
+            },
+            {
+                "name": "getDelay",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "context",
+                        "position": 0,
+                        "type": "Symfony\\Component\\HttpClient\\Response\\AsyncContext"
+                    },
+                    {
+                        "name": "responseContent",
+                        "position": 1,
+                        "type": "?string"
+                    },
+                    {
+                        "name": "exception",
+                        "position": 2,
+                        "type": "?Symfony\\Contracts\\HttpClient\\Exception\\TransportExceptionInterface"
+                    }
+                ],
+                "returnType": "int"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeFetcher\\ScrapeFetcher": {
+        "name": "ScraperBelt\\ScrapeFetcher\\ScrapeFetcher",
+        "shortName": "ScrapeFetcher",
+        "namespace": "ScraperBelt\\ScrapeFetcher",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "ScrapeFetcher constructor.\n@param array<mixed> $config Configuration options for the fetcher.\n@param ScrapeLogger|NullScrapeLogger $logger Logger instance for logging errors and exceptions.\n@throws \\InvalidArgumentException If the URL is not provided in the configuration.\n@throws \\Throwable If an error occurs during the request or logging.",
+                "parameters": [
+                    {
+                        "name": "config",
+                        "position": 0,
+                        "type": "array"
+                    },
+                    {
+                        "name": "logger",
+                        "position": 1,
+                        "type": "ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger"
+                    }
+                ]
+            },
+            {
+                "name": "__destruct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null
+            },
+            {
+                "name": "setUrl",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "url",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "executeRequest",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "void"
+            },
+            {
+                "name": "close",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "return",
+                        "position": 0,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    }
+                ],
+                "returnType": "?string"
+            },
+            {
+                "name": "getHeaders",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches the response headers.\n@return array<mixed> The response headers.\n@throws ClientException|ServerException|TransportException If an error occurs during the request or logging.",
+                "returnType": "array"
+            },
+            {
+                "name": "getRawContent",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches the raw content of the response.\n@return string The raw content.\n@throws ClientException|ServerException|TransportException If an error occurs during the request or logging.",
+                "returnType": "string"
+            },
+            {
+                "name": "getHeadAndRawCont",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches the response headers & raw content.\n@return array<mixed> The response headers & raw content.\n@throws ClientException|ServerException|TransportException If an error occurs during the request or logging.",
+                "returnType": "array"
+            },
+            {
+                "name": "getElementsObj",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches the response Object.\n@return Crawler The response Object.\n@throws \\Throwable If an error occurs during the request or logging.",
+                "parameters": [
+                    {
+                        "name": "selector",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "Symfony\\Component\\DomCrawler\\Crawler"
+            },
+            {
+                "name": "getElementsArray",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches the response Object as an array.\n@param string $selector The CSS selector to filter the response Object.\n@param string|array<mixed> $extract The fields to extract from the response Object.\n                             If a string is provided, it will be converted to an array.\n                             If 'text' or 'name' is provided, it will be converted to '_text' or '_name'.\n@return array<mixed>|null The response Object as an array.\n@throws \\Throwable If an error occurs during the request or logging.",
+                "parameters": [
+                    {
+                        "name": "selector",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "extract",
+                        "position": 1,
+                        "type": "array|string",
+                        "optional": true,
+                        "default": [
+                            "_text"
+                        ]
+                    }
+                ],
+                "returnType": "?array"
+            },
+            {
+                "name": "getIt",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches the first element from the response Object.\n@param string $selector The CSS selector to filter the response Object.\n@param string|array<mixed> $extract The fields to extract from the response Object.\n                             If a string is provided, it will be converted to an array.\n                             If 'text' or 'name' is provided, it will be converted to '_text' or '_name'.\n@param bool $strict If true, throws an exception if no elements are found.\n@return string|null The first element or null if not found.\n@throws \\Throwable If an error occurs during the request or logging.",
+                "parameters": [
+                    {
+                        "name": "selector",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "extract",
+                        "position": 1,
+                        "type": "array|string",
+                        "optional": true,
+                        "default": [
+                            "_text"
+                        ]
+                    },
+                    {
+                        "name": "strict",
+                        "position": 2,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    }
+                ],
+                "returnType": "?string"
+            },
+            {
+                "name": "getItJsonPath",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches a JSON value using JSONPath.\n@param string $jsonPath The JSONPath expression to evaluate.\n@param bool $strict If true, throws an exception if no elements are found.\n@return array<mixed>|null The found elements or null if not found.\n@throws \\Throwable If an error occurs during the request or logging.",
+                "parameters": [
+                    {
+                        "name": "jsonPath",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "strict",
+                        "position": 1,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    }
+                ],
+                "returnType": "?array"
+            },
+            {
+                "name": "fetchJsonAsArray",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Fetches a JSON response and, if valid, returns it as an array.\n@return array<mixed> The JSON response as an array.\n@throws ClientException|ServerException|TransportException|JsonException If an error occurs during the request or logging.",
+                "returnType": "array"
+            },
+            {
+                "name": "getRandoUserAgent",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Returns a random user agent from the user_agents.json file.\n@return string The random user agent.\n@throws \\RuntimeException If the user agent file is not found or cannot be read.",
+                "returnType": "string"
+            },
+            {
+                "name": "getRandoUserAgentStatic",
+                "visibility": "public",
+                "static": true,
+                "abstract": false,
+                "final": false,
+                "docblock": "Returns a random user agent from the user_agents.json file.\n@return string The random user agent.\n@throws \\RuntimeException If the user agent file is not found or cannot be read.",
+                "returnType": "string"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeCaser\\ScrapeWatcher": {
+        "name": "ScraperBelt\\ScrapeCaser\\ScrapeWatcher",
+        "shortName": "ScrapeWatcher",
+        "namespace": "ScraperBelt\\ScrapeCaser",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": "Watcher\nA class to \"watch\" special cases of a Scraper/Keeper target over time\nin order to mitigate the effects of human error on the data source side.\nA Watcher is invoked, set, checked and unset by a Scrape process\ndepending on Cases set by a Caser.\nThe Watcher simply `touch()`es, `is_file()`es and `unlink()`s a file at the given path.",
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "path",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ]
+            },
+            {
+                "name": "set",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "void"
+            },
+            {
+                "name": "isWatching",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "bool"
+            },
+            {
+                "name": "unset",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "void"
+            },
+            {
+                "name": "getPath",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "string"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeCaser\\ScrapeChecker": {
+        "name": "ScraperBelt\\ScrapeCaser\\ScrapeChecker",
+        "shortName": "ScrapeChecker",
+        "namespace": "ScraperBelt\\ScrapeCaser",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "ScrapeChecker constructor.\n@param array<string,mixed> $previousStatusData\n@param array<string,mixed> $fetchedData\n@param string $uniqueField\n@param array<string> $fieldsToCheck",
+                "parameters": [
+                    {
+                        "name": "previousStatusData",
+                        "position": 0,
+                        "type": "array"
+                    },
+                    {
+                        "name": "fetchedData",
+                        "position": 1,
+                        "type": "array"
+                    },
+                    {
+                        "name": "uniqueField",
+                        "position": 2,
+                        "type": "string"
+                    },
+                    {
+                        "name": "fieldsToCheck",
+                        "position": 3,
+                        "type": "array"
+                    }
+                ]
+            },
+            {
+                "name": "isUniqueNew",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "bool"
+            },
+            {
+                "name": "getCheckedData",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Gets the checked data.\n@return array<string,int>",
+                "returnType": "array"
+            },
+            {
+                "name": "setCheckedDataIsNew",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "case",
+                        "position": 0,
+                        "type": "bool"
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "isCheckedDataNew",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "bool"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeCaser\\ScrapeCaser": {
+        "name": "ScraperBelt\\ScrapeCaser\\ScrapeCaser",
+        "shortName": "ScrapeCaser",
+        "namespace": "ScraperBelt\\ScrapeCaser",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "uniqueIsNew",
+                        "position": 0,
+                        "type": "bool"
+                    },
+                    {
+                        "name": "checkedDataIsNew",
+                        "position": 1,
+                        "type": "bool"
+                    },
+                    {
+                        "name": "watcherIsSet",
+                        "position": 2,
+                        "type": "bool"
+                    }
+                ]
+            },
+            {
+                "name": "getCase",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "returnType": "string"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeKeeper\\ScrapeKeeper": {
+        "name": "ScraperBelt\\ScrapeKeeper\\ScrapeKeeper",
+        "shortName": "ScrapeKeeper",
+        "namespace": "ScraperBelt\\ScrapeKeeper",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "ScrapeKeeper constructor.\n@param array<mixed> $config Configuration options for the keeper.\n@param ScrapeLogger|NullScrapeLogger $logger Logger instance for logging errors and exceptions.\n@throws ScrapeException If the database connection fails.",
+                "parameters": [
+                    {
+                        "name": "config",
+                        "position": 0,
+                        "type": "array"
+                    },
+                    {
+                        "name": "logger",
+                        "position": 1,
+                        "type": "ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger"
+                    }
+                ]
+            },
+            {
+                "name": "__destruct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null
+            },
+            {
+                "name": "close",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "return",
+                        "position": 0,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    }
+                ],
+                "returnType": "?string"
+            },
+            {
+                "name": "insert",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Inserts data into a specified table.\n@param string $table The name of the table to insert data into.\n@param array<mixed> $data An associative array of data to insert.\n@param string $conflict The conflict resolution strategy (default: \"ABORT\").\n@throws PDOException If the SQL execution fails.",
+                "parameters": [
+                    {
+                        "name": "table",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "position": 1,
+                        "type": "array"
+                    },
+                    {
+                        "name": "conflict",
+                        "position": 2,
+                        "type": "string",
+                        "optional": true,
+                        "default": "ABORT"
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "update",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Updates data in a specified table based on a condition.\n@param string $table The name of the table to update.\n@param array<mixed> $data An associative array of data to update.\n@param string $condition The condition for the update (e.g., \"id = 1\").\n@throws PDOException If the SQL execution fails.",
+                "parameters": [
+                    {
+                        "name": "table",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "position": 1,
+                        "type": "array"
+                    },
+                    {
+                        "name": "condition",
+                        "position": 2,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "select",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "@param string $sql\n@return array<mixed>\n@throws \\InvalidArgumentException if the SQL statement is not a SELECT statement\n@throws \\PDOException if the SQL execution fails",
+                "parameters": [
+                    {
+                        "name": "sql",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "array"
+            },
+            {
+                "name": "createTable",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "sql",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "void"
+            }
+        ]
+    },
+    "ScraperBelt\\ScrapeCacher\\ScrapeCacher": {
+        "name": "ScraperBelt\\ScrapeCacher\\ScrapeCacher",
+        "shortName": "ScrapeCacher",
+        "namespace": "ScraperBelt\\ScrapeCacher",
+        "type": "class",
+        "abstract": false,
+        "final": false,
+        "docblock": null,
+        "properties": [],
+        "methods": [
+            {
+                "name": "__construct",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "logger",
+                        "position": 0,
+                        "type": "ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger"
+                    }
+                ]
+            },
+            {
+                "name": "putData",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": null,
+                "parameters": [
+                    {
+                        "name": "filePath",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "position": 1,
+                        "type": "mixed"
+                    },
+                    {
+                        "name": "format",
+                        "position": 2,
+                        "type": "?string",
+                        "optional": true,
+                        "default": null
+                    },
+                    {
+                        "name": "jsonOptions",
+                        "position": 3,
+                        "type": "int",
+                        "optional": true,
+                        "default": 4194560
+                    }
+                ],
+                "returnType": "void"
+            },
+            {
+                "name": "readFile",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Reads a file and returns its contents.\n@param string $filePath The path to the file.\n@return string The contents of the file.\n@throws IOExceptionInterface If an error occurs while reading the file.\n@throws ScrapeException If an error occurs while logging the exception.",
+                "parameters": [
+                    {
+                        "name": "filePath",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "string"
+            },
+            {
+                "name": "readJsonAsArray",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Convenience method to read a JSON file and return it as an array\n@return array<string|int, mixed>",
+                "parameters": [
+                    {
+                        "name": "filePath",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "array"
+            },
+            {
+                "name": "readJsonAsArrayAndTimestamp",
+                "visibility": "public",
+                "static": false,
+                "abstract": false,
+                "final": false,
+                "docblock": "Reads JSON as array and appends a UNIX timestamp under 'scraper_ts'.\n@param string $filePath The path to the JSON file.\n@return array<string|int, mixed>",
+                "parameters": [
+                    {
+                        "name": "filePath",
+                        "position": 0,
+                        "type": "string"
+                    }
+                ],
+                "returnType": "array"
+            },
+            {
+                "name": "keepLatestFiles",
+                "visibility": "public",
+                "static": true,
+                "abstract": false,
+                "final": false,
+                "docblock": "Keep only the latest files in a directory\n@param string $dirPath The path to the directory.\n@param int $limit The maximum number of files to keep.\n@param array<string> $ignore An array of filenames to ignore.\n@param bool $verbose Whether to print verbose output.\n@return array<string> The list of files that were kept.\n@throws \\InvalidArgumentException If the directory does not exist.",
+                "parameters": [
+                    {
+                        "name": "dirPath",
+                        "position": 0,
+                        "type": "string"
+                    },
+                    {
+                        "name": "limit",
+                        "position": 1,
+                        "type": "int"
+                    },
+                    {
+                        "name": "ignore",
+                        "position": 2,
+                        "type": "array",
+                        "optional": true,
+                        "default": []
+                    },
+                    {
+                        "name": "verbose",
+                        "position": 3,
+                        "type": "bool",
+                        "optional": true,
+                        "default": false
+                    }
+                ],
+                "returnType": "array"
+            }
+        ]
+    }
+}

@@ -1,0 +1,4 @@
+_dev
+.claude/
+settings.local.json
+vendor/

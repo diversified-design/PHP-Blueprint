@@ -1,0 +1,908 @@
+{
+    "Meteos\\AQI\\EuAQI": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $index = null /*The EU AQI value*/): self",
+            "aqiIndex(): ?float",
+            "static calculate(float $index): array"
+        ]
+    },
+    "Meteos\\AQI\\EuAQIScale": {
+        "constants": {
+            "SCALE": "array<int, {label, desc, message, colors}> (6 entries)"
+        }
+    },
+    "Meteos\\CloudBase": {
+        "implements": [
+            "Meteos\\Interfaces\\CloudBaseInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withAltitudeAndTemperature(?PrinsFrank\\MeasurementUnit\\Length\\Length $altitude = null, ?PrinsFrank\\MeasurementUnit\\Temperature\\Temperature $temperature = null): self",
+            "static create(?float $altitude = null, ?float $temperature = null, string $units = 'SI'): self",
+            "static fromMetersAndCelsius(?float $altitude = null, ?float $temperature = null): self",
+            "static fromFeetAndFahrenheit(?float $altitude = null, ?float $temperature = null): self",
+            "static withTempDewPointAndElevation(Meteos\\Temperature $temp, Meteos\\DewPoint $dewPoint, ?PrinsFrank\\MeasurementUnit\\Length\\Length $elevation = null): self",
+            "static fromTempDewPointAndElevation(?float $temp = null, ?float $dewPoint = null, ?float $elevation = null, string $units = 'SI'): self",
+            "hasValue(): bool",
+            "getAltitudeMeter(): ?PrinsFrank\\MeasurementUnit\\Length\\Meter",
+            "getAltitudeFoot(): ?PrinsFrank\\MeasurementUnit\\Length\\Foot",
+            "getTemperatureCelsius(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Celsius",
+            "getTemperatureFahrenheit(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Fahrenheit",
+            "getTemperatureKelvin(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Kelvin",
+            "altitudeMeters(): ?float",
+            "altitudeFeet(): ?float",
+            "temperatureCelsius(): ?float",
+            "temperatureFahrenheit(): ?float",
+            "jsonSerialize(): array",
+            "static calculate(float $temp /*The temperature (Celsius or Fahrenheit).*/, float $dewPoint /*The dew point (Celsius or Fahrenheit).*/, float $elevation /*The elevation (meters or feet).*/, string $units = 'SI' /*The units of measurement ('SI' for metric, 'USC' for imperial).*/): array — Calculate the cloud base altitude and temperature based on the given parameters.",
+            "static calculateSI(float $tempC /*The temperature in Celsius.*/, float $dewPointC /*The dew point in Celsius.*/, float $elevationM /*The elevation in meters.*/): array — Calculate the cloud base altitude and temperature for the SI units.",
+            "static calculateUSC(float $tempF /*The temperature in Fahrenheit.*/, float $dewPointF /*The dew point in Fahrenheit.*/, float $elevationFt /*The elevation in feet.*/): array — Calculate the cloud base altitude and temperature for the USC units."
+        ]
+    },
+    "Meteos\\Condition": {
+        "doc": "A class representing generic, non-coded, weather conditions. If you have WeatherCodes, use the WeatherCode class instead, with a WeatherCode Enum for your specific API.",
+        "implements": [
+            "Meteos\\Interfaces\\ConditionInterface",
+            "JsonSerializable"
+        ],
+        "methods": [
+            "static create(?string $label = null, ?string $description = null): self",
+            "getLabel(): ?string",
+            "getDescription(): ?string",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\Constants\\Magnus": {
+        "constants": {
+            "Coefficient_A": 17.625,
+            "Coefficient_B": 243.04,
+            "Coefficient_A_f": 22.587,
+            "Coefficient_B_f": 273.86
+        }
+    },
+    "Meteos\\DewPoint": {
+        "implements": [
+            "Meteos\\Interfaces\\DewPointInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withTemperature(?PrinsFrank\\MeasurementUnit\\Temperature\\Temperature $temperature = null): self",
+            "static create(?float $value = null, string $unit = 'C'): self",
+            "static fromCelsius(?float $value = null): self",
+            "static fromFahrenheit(?float $value = null): self",
+            "static fromKelvin(?float $value = null): self",
+            "static withTemperatureAndHumidity(Meteos\\Temperature $temp, Meteos\\RelHumidity $humidity): self",
+            "static fromTempAndRelHumidity(?float $temp = null, ?float $relHum = null, string $unit = 'C'): self",
+            "hasValue(): bool",
+            "getCelsius(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Celsius",
+            "getFahrenheit(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Fahrenheit",
+            "getKelvin(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Kelvin",
+            "celsius(): ?float",
+            "fahrenheit(): ?float",
+            "kelvin(): ?float",
+            "jsonSerialize(): array",
+            "static calculate(float $temp, float $relHum, string $unit = 'C'): float",
+            "static calculateC(float $tempC, float $relHum): float",
+            "static calculateF(float $tempF, float $relHum): float"
+        ]
+    },
+    "Meteos\\Enums\\CardinalDirection": {
+        "type": "enum",
+        "final": true,
+        "constants": {
+            "N": "N",
+            "NNE": "NNE",
+            "NE": "NE",
+            "ENE": "ENE",
+            "E": "E",
+            "...": "(16 total)"
+        },
+        "methods": [
+            "static fromDegrees(float $degrees): self",
+            "static toDegrees(string $cardinal): float",
+            "inDegrees(): float"
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\Jma": {
+        "type": "enum",
+        "final": true,
+        "doc": "JMA (Japan Meteorological Agency) base weather condition codes. The JMA defines a large set of weather codes for forecasts, most of which are compound descriptions encoding temporal transitions (e.g., \"sunny then occasionally cloudy, later rain\"). This enum contains only the base conditions — those with defined kanji and hiragana representations. The JMA system is fundamentally a forecast vocabulary, not a present weather observation system like WMO WW. Mappings to WMO WW are therefore approximate and should be understood as \"closest equivalent phenomenon,\" not as precise translations.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "Hare": 100,
+            "Kumori": 200,
+            "Kiri": 209,
+            "Ame": 300,
+            "AmeKiri": 351,
+            "...": "(11 total)"
+        },
+        "methods": [
+            "description(): string — English description of the weather condition.",
+            "toWmoWw(): array — Map this JMA code to the closest WMO WW (4677) equivalent(s). JMA codes describe forecast conditions, not point-in-time observations, so these mappings are inherently approximate. Returns an array because a single JMA condition may correspond to multiple WMO WW codes that encode intensity or continuity distinctions JMA does not make.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest JMA base condition. Extremely lossy: 100 WMO codes collapse into 11 JMA base conditions. Many fine-grained distinctions (intensity, continuity, trend) are lost. Returns null for phenomena with no JMA base equivalent (dust, distant phenomena, preceding hour observations).",
+            "descriptionJa(): string — Japanese description of the weather condition.",
+            "kanji(): string — The kanji representation of this weather condition.",
+            "hiragana(): string — The hiragana representation of this weather condition.",
+            "romaji(): string — The romaji (Latin transliteration) of this weather condition.",
+            "static fromKanji(string $kanji): ?self — Look up a JMA base condition by its kanji string. Returns null if the string does not match any base condition.",
+            "static fromHiragana(string $hiragana): ?self — Look up a JMA base condition by its hiragana string. Returns null if the string does not match any base condition."
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\MetNo": {
+        "type": "enum",
+        "final": true,
+        "doc": "Met.no (Norwegian Meteorological Institute) weather symbol codes. These codes identify weather conditions in Norwegian Meteorological Institute's Locationforecast and Nowcast APIs. Each code corresponds to an icon in the \"weathericons\" set; some have day/night variants (e.g. \"clearsky_day\", \"clearsky_night\"), others do not. This enum covers all 41 codes in the Norwegian Meteorological Institute weathericon set. The API switched from integer-based codes to string-based codes matching icon filenames.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "ClearSky": "clearsky",
+            "Fair": "fair",
+            "PartlyCloudy": "partlycloudy",
+            "Cloudy": "cloudy",
+            "RainShowers": "rainshowers",
+            "...": "(41 total)"
+        },
+        "methods": [
+            "description(): string — Human-readable description of this weather condition.",
+            "toWmoWw(): array — Map this Met.no code to the closest WMO WW (4677) equivalent. The Met.no system is a forecast icon vocabulary, not a present weather observation system. These mappings are approximate — \"closest equivalent phenomenon,\" not precise translations.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest Met.no equivalent. Many WMO distinctions (intermittent vs continuous, trend, sky visibility) have no Met.no counterpart. Returns null for phenomena with no reasonable Met.no analogue (dust, haze, distant phenomena, preceding-hour observations). The official Met.no set has no drizzle, freezing precipitation, or hail codes. WMO codes for these phenomena are mapped to the closest available Met.no code (drizzle → rain, freezing precip → sleet, hail+thunder → sleet showers+thunder).",
+            "hasDayNightVariant(): bool — Whether this code has separate icon variants for time of day. Codes like \"clear sky\" look different in daylight, darkness, and polar twilight, while codes like \"fog\" or \"heavy rain\" use the same icon regardless. Variant codes have three icon forms: _day, _night, _polartwilight.",
+            "iconFilename(string $variant = 'day' /*One of 'day', 'night', or 'polartwilight'. Ignored for non-variant codes.*/): string — Icon filename stem for this code (without extension). Returns strings like \"clearsky_day\", \"lightrain_polartwilight\", \"fog\" — matching the naming convention used by Met.no's weathericon service.",
+            "static fromSymbolCode(string $symbolCode): ?self — Resolve a Met.no enum case from a full API symbol code. Accepts both bare codes (\"fog\") and variant-suffixed codes (\"clearsky_day\", \"rainshowers_polartwilight\"). Returns null if the base code doesn't match any case.",
+            "static variantFromSymbolCode(string $symbolCode): ?string — Extract the time-of-day variant from a full API symbol code. Returns 'day', 'night', or 'polartwilight' if present, null otherwise (either because the code has no variant or is unrecognised)."
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\Meteos": {
+        "type": "enum",
+        "final": true,
+        "doc": "Meteos weather symbol codes. based on the old Yr.No/NRK symbol codes. This enum covers 50 codes.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "ClearSky": 1,
+            "Fair": 2,
+            "PartlyCloudy": 3,
+            "Cloudy": 4,
+            "RainShowers": 5,
+            "...": "(50 total)"
+        },
+        "methods": [
+            "description(): string — Human-readable description of this weather condition.",
+            "labelSnakeCase(): string — A throwback to support the old Yr.no Labels",
+            "label(): string — A throwback to support the new Met.no \"symbol_code\"",
+            "toWmoWw(): array — Map this Met.no code to the closest WMO WW (4677) equivalent. The Met.no system is a forecast icon vocabulary, not a present weather observation system. These mappings are approximate — \"closest equivalent phenomenon,\" not precise translations.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest Met.no equivalent. Many WMO distinctions (intermittent vs continuous, trend, sky visibility) have no Met.no counterpart. Returns null for phenomena with no reasonable Met.no analogue (dust, haze, distant phenomena, preceding-hour observations).",
+            "hasDayNightVariant(): bool — Whether this code has separate day and night icon variants. Codes like \"clear sky\" look different in daylight vs darkness, while codes like \"fog\" or \"heavy rain\" use the same icon regardless.",
+            "iconFilename(int|bool|null $isDay = true /*True for daytime variant, false for nighttime.*/): string — Icon filename stem for this code (without extension). Returns strings like \"01d\", \"10n\", \"15\" — matching the naming convention used by Norwegian Meteorological Institute's weathericon service.",
+            "static detailsFromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw|int $wmoCode, int|bool|null $isDay = true): array — Temporary replacement for deprecated `WeatherCodes::wmoCodeToYrnoDetails()`"
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\OpenMeteo": {
+        "type": "enum",
+        "final": true,
+        "doc": "Open-Meteo weather codes. Open-Meteo uses a subset of the WMO \"WW\" weather codes, with their own descriptions.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "ClearSky": 0,
+            "MainlyClear": 1,
+            "PartlyCloudy": 2,
+            "Overcast": 3,
+            "Fog": 45,
+            "...": "(28 total)"
+        },
+        "methods": [
+            "description(): string — Open-Meteo description text for this code.",
+            "toWmoWw(): array — Map this Open-Meteo code to the canonical WMO WW (4677) equivalent. Since Open-Meteo uses a subset of WMO WW codes with the same integer values, this is a direct identity mapping — always unambiguous. We return it in an array to satisfy the interface contract.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest Open-Meteo equivalent. Open-Meteo only covers 28 of the 100 WMO WW codes. For WMO codes that fall outside this subset, the nearest Open-Meteo code is returned based on phenomenological similarity. Returns null only for codes with no reasonable Open-Meteo analogue (e.g., dust phenomena)."
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\OpenWeather": {
+        "type": "enum",
+        "final": true,
+        "doc": "OpenWeatherMap weather condition codes. OWM uses its own numeric code system grouped by phenomenon type: 2xx  Thunderstorm 3xx  Drizzle 5xx  Rain 6xx  Snow 7xx  Atmosphere (visibility phenomena) 800  Clear 80x  Clouds",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "ThunderstormWithLightRain": 200,
+            "ThunderstormWithRain": 201,
+            "ThunderstormWithHeavyRain": 202,
+            "LightThunderstorm": 210,
+            "Thunderstorm": 211,
+            "...": "(55 total)"
+        },
+        "methods": [
+            "description(): string — OpenWeatherMap description text for this code.",
+            "toWmoWw(): array — Map this OWM code to the closest WMO WW (4677) equivalent(s). Returns an array because some OWM codes correspond to multiple WMO WW codes that encode distinctions OWM does not make.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest OpenWeatherMap equivalent. This is a many-to-one (lossy) mapping. Multiple WMO WW codes collapse into a single OWM code because OWM's vocabulary is coarser in some areas (e.g., no intermittent/continuous distinction) and absent in others (e.g., no \"preceding hour\" codes). Returns null for WMO codes with no reasonable OWM analogue.",
+            "owmGroup(): string — The OWM group label for this code."
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\TomorrowIo": {
+        "type": "enum",
+        "final": true,
+        "doc": "Tomorrow.io weather condition codes. Tomorrow.io uses a numeric code system grouped by phenomenon type: 0     Unknown 1xxx  Cloud/sky conditions 2xxx  Fog 4xxx  Drizzle and rain 5xxx  Snow 6xxx  Freezing precipitation 7xxx  Ice pellets 8xxx  Thunderstorms Many codes encode compound conditions with a sky-state qualifier (e.g., \"Mostly Clear and Light Rain\"). The base weather condition determines the WMO mapping; the sky qualifier is additional context not representable in WMO WW.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "Unknown": 0,
+            "Clear": 1000,
+            "MostlyClear": 1100,
+            "PartlyCloudy": 1101,
+            "MostlyCloudy": 1102,
+            "...": "(94 total)"
+        },
+        "methods": [
+            "description(): string — Tomorrow.io description text for this code.",
+            "toWmoWw(): array — Map this Tomorrow.io code to the closest WMO WW (4677) equivalent(s). Compound conditions (e.g., \"Mostly Clear and Light Rain\") map to the same WMO code as their base weather condition, since WMO WW does not encode cloud cover alongside precipitation.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest Tomorrow.io equivalent. Maps to base conditions only (no cloud qualifier), since WMO WW does not encode cloud cover alongside precipitation. Returns null for phenomena with no reasonable Tomorrow.io analogue (dust, haze, distant phenomena, preceding-hour observations)."
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\WeatherApi": {
+        "type": "enum",
+        "final": true,
+        "doc": "WeatherAPI (weatherapi.com) weather condition codes. WeatherAPI uses its own 4-digit code system (48 codes) that maps 1:1 to the identical condition set used by World Weather Online (WWO). The conditions, descriptions, and icon sets are shared between the two services.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "Clear": 1000,
+            "PartlyCloudy": 1003,
+            "Cloudy": 1006,
+            "Overcast": 1009,
+            "Mist": 1030,
+            "...": "(48 total)"
+        },
+        "methods": [
+            "description(): string — WeatherAPI condition description text. Identical to WWO descriptions — the two services share a condition set.",
+            "toWmoWw(): array — Map this WeatherAPI code to the closest WMO WW (4677) equivalent(s). Substantively identical to WorldWeatherOnline::toWmoWw() since WeatherAPI and WWO share the same condition set.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest WeatherAPI equivalent. Substantively identical to WorldWeatherOnline::fromWmoWw() since WeatherAPI and WWO share the same condition set."
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\WmoWaWa": {
+        "type": "enum",
+        "final": true,
+        "doc": "WMO Code Table 4680 — Present weather reported from an automatic weather station. This is the \"w'w'\" (wawa) element in SYNOP reports. It encodes present weather as detected by automated instruments, and is inherently less expressive than the manned equivalent (4677 / WmoWw). Many observational distinctions that require human judgement — such as intermittent vs continuous precipitation, sky visibility through fog, or distant phenomena — are absent here. Structure overview: 00–05  General conditions (cloud state, haze, visibility) 06–09  Reserved 10–12  Mist, diamond dust, distant lightning 13–17  Reserved 18     Squalls 19     Reserved 20–29  Preceding hour phenomena 30–35  Fog (simplified state) 36–39  Reserved 40–48  Precipitation (generic / by phase) 49     Reserved 50–58  Drizzle 59     Reserved 60–68  Rain 69     Reserved 70–78  Solid precipitation 79     Reserved 80–89  Showers and intermittent precipitation 90–96  Thunderstorms 97–98  Reserved 99     Tornado Note: \"Reserved\" codes (06–09, 13–17, 19, etc.) are not represented as enum cases. If encountered in data, they should be treated as unrecognised values.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "NoSignificantWeather": 0,
+            "CloudsDissolving": 1,
+            "SkyUnchanged": 2,
+            "CloudsForming": 3,
+            "HazeOrSmokeVisibilityGte1km": 4,
+            "...": "(79 total)"
+        },
+        "methods": [
+            "description(): string — Official WMO description text for this code.",
+            "group(): Meteos\\Enums\\WeatherCodes\\WmoWaWaGroup — The broad phenomenological group this code belongs to.",
+            "isPrecipitating(): bool — Whether this code indicates precipitation is occurring at the time of observation.",
+            "isFreezing(): bool — Whether this code indicates freezing conditions in the precipitation.",
+            "toWmoWw(): array — Map this automatic station code to the closest canonical WmoWw (4677) equivalent(s). Returns an array because the mapping is often one-to-many: an auto station code may correspond to multiple manned station codes that encode distinctions (e.g. intermittent vs continuous) the auto sensor cannot make.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self"
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\WmoWaWaGroup": {
+        "type": "enum",
+        "final": true,
+        "doc": "Broad phenomenological groups for WMO code table 4680 (w'w').",
+        "constants": {
+            "GeneralConditions": "general_conditions",
+            "Mist": "mist",
+            "DistantPhenomena": "distant_phenomena",
+            "Squalls": "squalls",
+            "PrecedingHour": "preceding_hour",
+            "...": "(13 total)"
+        }
+    },
+    "Meteos\\Enums\\WeatherCodes\\WmoWw": {
+        "type": "enum",
+        "final": true,
+        "doc": "WMO Code Table 4677 — Present weather reported from a manned weather station. This is the \"ww\" element in SYNOP reports. It encodes the present weather as observed by a trained human observer, offering the highest resolution of any standard weather code table. It serves as the canonical reference for cross-mapping with other code systems (4680, METAR, JMA, etc.). Structure overview: 00–03  Cloud development / sky state 04–09  Visibility phenomena (haze, dust, sand) 10–12  Mist and shallow fog 13–19  Distant/notable phenomena (lightning, virga, squalls, tornadoes) 20–29  Weather during preceding hour, not at time of observation 30–39  Duststorms and blowing/drifting snow 40–49  Fog and ice fog (detailed state matrix) 50–59  Drizzle 60–69  Rain 70–79  Solid precipitation (snow, ice pellets, diamond dust, etc.) 80–90  Showers 91–99  Thunderstorms",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "CloudDevelopmentNotObserved": 0,
+            "CloudsDissolving": 1,
+            "SkyUnchanged": 2,
+            "CloudsForming": 3,
+            "VisibilityReducedBySmoke": 4,
+            "...": "(100 total)"
+        },
+        "methods": [
+            "description(): string — Official WMO description text for this code.",
+            "group(): Meteos\\Enums\\WeatherCodes\\WmoWwGroup — The broad phenomenological group this code belongs to. Useful for filtering, icon selection, and coarse categorisation.",
+            "isPrecipitating(): bool — Whether this code indicates precipitation is occurring at the time of observation.",
+            "isFreezing(): bool — Whether this code indicates freezing conditions in the precipitation.",
+            "toWmoWw(): array",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code /*@return ?self*/): ?self"
+        ]
+    },
+    "Meteos\\Enums\\WeatherCodes\\WmoWwGroup": {
+        "type": "enum",
+        "final": true,
+        "doc": "Broad phenomenological groups for WMO code table 4677 (ww). These correspond to the numeric ranges in the code table and provide a convenient way to filter, categorise, or select icons for weather codes.",
+        "constants": {
+            "CloudAndSky": "cloud_and_sky",
+            "Visibility": "visibility",
+            "MistAndShallowFog": "mist_and_shallow_fog",
+            "DistantPhenomena": "distant_phenomena",
+            "PrecedingHour": "preceding_hour",
+            "...": "(13 total)"
+        }
+    },
+    "Meteos\\Enums\\WeatherCodes\\WorldWeatherOnline": {
+        "type": "enum",
+        "final": true,
+        "doc": "World Weather Online weather condition codes. WWO uses its own numeric code system (48 codes) covering standard weather conditions. Many codes include \"patchy\" or \"at times\" qualifiers that have no direct WMO equivalent. WeatherAPI (weatherapi.com) uses an identical condition set with different integer codes — see the WeatherApi enum.",
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodesEnumInterface"
+        ],
+        "constants": {
+            "Clear": 113,
+            "PartlyCloudy": 116,
+            "Cloudy": 119,
+            "Overcast": 122,
+            "Mist": 143,
+            "...": "(48 total)"
+        },
+        "methods": [
+            "description(): string — WWO condition description text.",
+            "toWmoWw(): array — Map this WWO code to the closest WMO WW (4677) equivalent(s). Returns an array for consistency with the interface. WWO's \"patchy\" and \"at times\" qualifiers map to WMO's intermittent codes where available; continuous descriptions map to WMO continuous codes.",
+            "static fromWmoWw(Meteos\\Enums\\WeatherCodes\\WmoWw $code): ?self — Map a WMO WW (4677) code to the closest WWO equivalent. This is a many-to-one (lossy) mapping. WMO's intermittent/continuous distinction maps to WWO's \"patchy\"/\"at times\" vs continuous codes where available. Returns null for WMO phenomena with no reasonable WWO analogue (dust, distant phenomena, preceding-hour observations)."
+        ]
+    },
+    "Meteos\\Exceptions\\InvalidUnitException": {
+        "extends": "InvalidArgumentException",
+        "implements": [
+            "Meteos\\Exceptions\\MeteosException"
+        ],
+        "methods": [
+            "__construct(string $unit, array $validUnits /**/*/, string $context = '', int $code = 0, ?Throwable $previous = null) — /** @param string[] $validUnits */",
+            "getUnit(): string",
+            "getValidUnits(): array — /** @return string[] */"
+        ]
+    },
+    "Meteos\\Exceptions\\InvalidValueException": {
+        "extends": "InvalidArgumentException",
+        "implements": [
+            "Meteos\\Exceptions\\MeteosException"
+        ],
+        "methods": [
+            "__construct(string $label, float $value, ?float $min = null, ?float $max = null, int $code = 0, ?Throwable $previous = null)",
+            "getLabel(): string",
+            "getValue(): float",
+            "getMin(): ?float",
+            "getMax(): ?float"
+        ]
+    },
+    "Meteos\\Indices\\AbstractIndex": {
+        "abstract": true,
+        "doc": "Abstract class defining the base methods for Indices.",
+        "implements": [
+            "Meteos\\Interfaces\\IndexInterface",
+            "Meteos\\Interfaces\\IndexResultInterface"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "hasValue(): bool",
+            "index(): ?float",
+            "level(): ?int",
+            "label(): ?string",
+            "description(): ?string",
+            "scale(): ?array",
+            "jsonSerialize(): array",
+            "static range(float $index /*key for retrieving the associated range and level information*/): array @throws OutOfRangeException",
+            "static getRanges(): array — Get the const RANGES array of this index.",
+            "static getScale(): object — Get the const SCALE object of this index.",
+            "static getScaleLevel(int $level /*the index level*/): array — Get the information for a specific index level."
+        ]
+    },
+    "Meteos\\Indices\\GustIndex": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $speedMS = null /*Wind speed in meters per second*/, ?float $gustMS = null /*Gust speed in meters per second*/): self",
+            "static withWinds(Meteos\\Interfaces\\WindsInterface $winds /*A Winds observation object (must have wind speed and gust speed)*/): self",
+            "gustFactor(): ?float",
+            "static calculate(float $speedMS /*Wind speed in meters per second*/, float $gustMS /*Gust speed in meters per second*/): array — Calculate gust index @throws InvalidArgumentException",
+            "static calculateGustFactor(float $speedMS /*Wind speed in meters per second*/, float $gustMS /*Gust speed in meters per second*/): float — Calculate gust factor @throws InvalidArgumentException",
+            "static normalizeWindAndGust(float $speedMS /*Wind speed in meters per second*/, float $gustMS /*Gust speed in meters per second*/): array — Normalize wind and gust speeds @throws InvalidArgumentException"
+        ]
+    },
+    "Meteos\\Indices\\HeatIndex": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $tempC = null /*Temperature in Celsius*/, ?float $relHum = null /*Relative humidity in percent*/): self — Create a HeatIndex from Celsius temperature and relative humidity.",
+            "static fromFahrenheit(float $tempF /*Temperature in Fahrenheit*/, float $relHum /*Relative humidity in percent*/): self — Create a HeatIndex from Fahrenheit temperature and relative humidity.",
+            "static withObservations(Meteos\\Interfaces\\TemperatureInterface $temperature /*A Temperature observation object*/, Meteos\\Interfaces\\RelHumidityInterface $relHumidity /*A RelHumidity observation object*/): self — Create a HeatIndex from Temperature and RelHumidity observation objects.",
+            "celsius(): ?float — Get the heat index value in Celsius.",
+            "fahrenheit(): ?float — Get the heat index value in Fahrenheit.",
+            "static calculate(float $temp /*The temperature in Fahrenheit or Celsius.*/, float $relHum /*The relative humidity in percent.*/, string $unit = 'C' /*'F' (default) or 'C': Units of passed temp.*/): array @throws \\InvalidArgumentException",
+            "static calculateC(float $tempC /*The temperature in Celsius.*/, float $relHum /*The relative humidity.*/): array @throws \\InvalidArgumentException",
+            "static calculateF(float $tempF /*The temperature in Fahrenheit.*/, float $relHum /*The relative humidity.*/): array @throws \\InvalidArgumentException"
+        ]
+    },
+    "Meteos\\Indices\\Humidex": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $tempC = null /*Temperature in Celsius*/, ?float $relHum = null /*Relative humidity in percent*/): self — Create a Humidex from Celsius temperature and relative humidity.",
+            "static fromDewPoint(float $tempC /*Temperature in Celsius*/, float $dewPointC /*Dew point in Celsius*/): self — Create a Humidex from Celsius temperature and dew point in Celsius.",
+            "static withObservations(Meteos\\Interfaces\\TemperatureInterface $temperature /*A Temperature observation object*/, Meteos\\Interfaces\\RelHumidityInterface $relHumidity /*A RelHumidity observation object*/): self — Create a Humidex from Temperature and RelHumidity observation objects.",
+            "static withDewPointObservations(Meteos\\Interfaces\\TemperatureInterface $temperature /*A Temperature observation object*/, Meteos\\Interfaces\\DewPointInterface $dewPoint /*A DewPoint observation object*/): self — Create a Humidex from Temperature and DewPoint observation objects.",
+            "humidex(): ?float",
+            "static calculate(float $temp /*The temperature in Celsius.*/, float $relHum /*The relative humidity in percent.*/, string $unit = 'C' /*The unit of temperature ('C' or 'F').*/): array — Calculate the humidex based on temperature and relative humidity. @throws \\InvalidArgumentException",
+            "static calculateC(float $tempC /*The temperature in Celsius.*/, float $relHum /*The relative humidity in percent.*/): array — Calculate the humidex based on temperature in Celsius and relative humidity. @throws \\InvalidArgumentException",
+            "static calculateF(float $tempF /*The temperature in Fahrenheit.*/, float $relHum /*The relative humidity in percent.*/): array — Calculate the humidex based on temperature in Fahrenheit and relative humidity. @throws \\InvalidArgumentException",
+            "static calculateWithDewPoint(float $temp /*The temperature in Celsius.*/, float $dewPoint /*The dew point in Celsius.*/, string $units = 'C' /*The unit of temperature ('C' or 'F').*/): array — Calculate the humidex based on temperature and dew point. @throws \\InvalidArgumentException",
+            "static calculateWithDewPointC(float $tempC /*The temperature in Celsius.*/, float $dewPointC /*The dew point in Celsius.*/): array — Calculate the humidex based on temperature in Celsius and dew point in Celsius. @throws \\InvalidArgumentException",
+            "static calculatorWithDewPointF(float $tempF /*The temperature in Fahrenheit.*/, float $dewPointF /*The dew point in Fahrenheit.*/): array — Calculate the humidex based on temperature in Fahrenheit and dew point in Fahrenheit.",
+            "static calculatorWithRelHum(float $tempC /*The temperature in Celsius.*/, float $relHum /*The relative humidity in percent.*/): array — Calculate the humidex based on temperature in Celsius and relative humidity.",
+            "static calculatorWithDewPoint(float $tempC /*The temperature in Celsius.*/, float $dewPointC /*The dew point in Celsius.*/): array — Calculate the humidex based on temperature in Celsius and dew point in Celsius. @throws \\InvalidArgumentException"
+        ]
+    },
+    "Meteos\\Indices\\SWIndex": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $gti = null /*Global Tilted Irradiance in W/m2*/, ?float $dni = null /*Direct Normal Irradiance in W/m2*/, ?float $ghi = null /*Global Horizontal Irradiance in W/m2*/, ?int $hour = null /*(Optional) Hour of the day (0-23)*/): self",
+            "swIndex(): ?float",
+            "static calculate(float $gti /*Global Tilted Irradiance in W/m2*/, float $dni /*Direct Normal Irradiance in W/m2*/, float $ghi /*Global Horizontal Irradiance in W/m2*/, ?int $hour = null /*(Optional) Hour of the day (0-23)*/): array",
+            "static calculateSolarElevation(float $latitude /*Latitude in degrees.*/, float $longitude /*Longitude in degrees.*/, DateTimeImmutable $datetime /*The date and time for which to calculate the solar elevation.*/): float — Calculate the solar elevation angle based on latitude, longitude, and datetime.",
+            "static calculatorPerson(float $dni /*Direct Normal Irradiance in W/m2*/, float $ghi /*Global Horizontal Irradiance in W/m2*/, float $solarElevation /*Solar elevation angle in degrees*/): float — Calculate the solar radiation received by a person based on DNI, GHI, and solar elevation."
+        ]
+    },
+    "Meteos\\Indices\\UVIndex": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $index = null /*The UV index value*/): self",
+            "uvIndex(): ?float",
+            "static calculate(float $index): array"
+        ]
+    },
+    "Meteos\\Indices\\WBGTIndex": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $tempC = null /*Temperature in Celsius*/, ?float $relHum = null /*Relative humidity in percent*/, ?float $sr = null /*Solar radiation in kW/m2*/, ?float $windMS = null /*Wind speed in m/s*/): self — Create a WBGTIndex from SI units (Celsius, m/s).",
+            "static withObservations(Meteos\\Interfaces\\TemperatureInterface $temperature /*A Temperature observation object*/, Meteos\\Interfaces\\RelHumidityInterface $relHumidity /*A RelHumidity observation object*/, float $sr /*Solar radiation in kW/m2*/, Meteos\\Interfaces\\WindsInterface $winds /*A Winds observation object*/): self — Create a WBGTIndex from Temperature, RelHumidity, and Winds observation objects.",
+            "wbgtIndex(): ?float",
+            "static calculate(float $temp /*SI: Celsius, USC: Fahrenheit*/, float $relHum /*Relative Humidity in %*/, float $sr /*Solar Radiation in kW/m2*/, float $wind /*SI: m/s, USC: mph*/, string $units = 'SI' /*'SI' (default) or 'USC': Units of passed temp, wind, and sr.*/): array",
+            "static calculateSI(float $tempC /*Temperature in Celsius*/, float $relHum /*Relative Humidity in %*/, float $sr /*Solar Radiation in kW/m2*/, float $windMS /*Wind Speed in m/s*/): array — Calculate WBGT index in SI units (Celsius, m/s, kW/m2)",
+            "static calculateUSC(float $tempF /*Temperature in Fahrenheit*/, float $relHum /*Relative Humidity in %*/, float $sr /*Solar Radiation in kW/m2*/, float $windMPH /*Wind Speed in mph*/): array — Calculate WBGT index in USC units (Fahrenheit, mph, kW/m2)"
+        ]
+    },
+    "Meteos\\Indices\\WindChill": {
+        "extends": "Meteos\\Indices\\AbstractIndex",
+        "methods": [
+            "static create(?float $tempC = null /*Temperature in Celsius*/, ?float $windKmH = null /*Wind speed in km/h*/): self — Create a WindChill from SI units (Celsius, km/h).",
+            "static fromUSC(float $tempF /*Temperature in Fahrenheit*/, float $windMPH /*Wind speed in mph*/): self — Create a WindChill from USC units (Fahrenheit, mph).",
+            "static withObservations(Meteos\\Interfaces\\TemperatureInterface $temperature /*A Temperature observation object*/, Meteos\\Interfaces\\WindsInterface $winds /*A Winds observation object*/): self — Create a WindChill from Temperature and Winds observation objects.",
+            "celsius(): ?float — Get the wind chill value in Celsius.",
+            "fahrenheit(): ?float — Get the wind chill value in Fahrenheit.",
+            "rateWPM2(): ?float — Get the wind chill rate in Watts per square metre.",
+            "jsonSerialize(): array",
+            "static calculate(float $temp /*Temperature in °Celsius or °Fahrenheit*/, float $wind /*Wind Speed in Kilometers per Hour (SI) or Miles per Hour (USC)*/, string $units = 'SI' /*'SI' (°C & km/h, default) or 'USC' (°F & mph)*/): array",
+            "static calculateSI(float $tempC /*Temperature in °Celsius*/, float $windKmH /*Wind Speed in Kilometers per Hour*/): array",
+            "static calculateUSC(float $tempF /*Temperature in °Fahrenheit*/, float $windMPH /*Wind Speed in Miles per Hour*/): array",
+            "static range(float $index /*The wind chill index value.*/, string $unit = 'C' /*The unit of measurement ('C' for Celsius, 'F' for Fahrenheit).*/): array — Get the wind chill index level based on the given index and unit. @throws OutOfRangeException"
+        ]
+    },
+    "Meteos\\Meteos": {
+        "methods": [
+            "setSI(): void",
+            "setUSC(): void",
+            "setUnits($units): void",
+            "getUnits(): string",
+            "isSI(): bool",
+            "isUSC(): bool",
+            "isMetric(): bool",
+            "isImperial(): bool",
+            "setElevationM($elevationM): void",
+            "setElevationFt($elevationFt): void",
+            "getElevation(): float",
+            "getElevationM(): float",
+            "getElevationFt(): float",
+            "setTempC($tempC): void",
+            "setTempF($tempF): void",
+            "getTemp(): float",
+            "getTempC(): float",
+            "getTempF(): float",
+            "setWindKmH($windKmH): void",
+            "setWindKn($windKn): void",
+            "setWindMph($windMph): void",
+            "setWindMS($windMS): void",
+            "getWind(): float",
+            "getWindKmH(): float",
+            "getWindKn(): float",
+            "getWindMph(): float",
+            "getWindMS(): float",
+            "setDewPointC($dewPointC): void",
+            "setDewPointF($dewPointF): void",
+            "getDewPoint(): float",
+            "getDewPointC(): float",
+            "getDewPointF(): float",
+            "setRelHum($relHum): void",
+            "getRelHum(): float",
+            "calcRelHumFromDewPoint(): float",
+            "setCloudBaseAltM($cloudBaseAltM): void",
+            "setCloudBaseAltFT($cloudBaseAltFT): void",
+            "setCloudBaseTempC($cloudBaseTempC): void",
+            "setCloudBaseTempF($cloudBaseTempF): void",
+            "getCloudBase(): array",
+            "getCloudBaseAlt(): float",
+            "getCloudBaseAltM(): float",
+            "getCloudBaseAltFT(): float",
+            "getCloudBaseTemp(): float",
+            "getCloudBaseTempC(): float",
+            "getCloudBaseTempF(): float",
+            "getHeatIndex(): array",
+            "getHeatIndexC(): array",
+            "getHeatIndexF(): array",
+            "getHeatIndexRanges(): array",
+            "getHeatIndexScale(): object",
+            "setHumidex($humidex): void",
+            "getHumidex()",
+            "setWbgtIndex($wbgtIndex): void",
+            "getWbgtIndex()",
+            "setWetBulb($wetBulb): void",
+            "getWetBulb()",
+            "getWindChill(): array",
+            "getWindChillSI(): array",
+            "getWindChillUSC(): array",
+            "getWindchillRanges(): array",
+            "getWindchillScale(): object"
+        ]
+    },
+    "Meteos\\NullObservation": {
+        "implements": [
+            "Meteos\\Interfaces\\NullObservationInterface"
+        ]
+    },
+    "Meteos\\Precipitation": {
+        "implements": [
+            "Meteos\\Interfaces\\PrecipitationInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withAmount(?PrinsFrank\\MeasurementUnit\\Length\\Length $amount = null): self",
+            "static create(?float $value = null, string $unit = 'mm'): self",
+            "static fromMillimeters(?float $value = null): self",
+            "static fromInches(?float $value = null): self",
+            "hasValue(): bool",
+            "getMillimeter(): ?PrinsFrank\\MeasurementUnit\\Length\\Millimeter",
+            "getInch(): ?PrinsFrank\\MeasurementUnit\\Length\\Inch",
+            "millimeter(): ?float",
+            "inch(): ?float",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\Pressure": {
+        "implements": [
+            "Meteos\\Interfaces\\PressureInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static create(?float $hpa = null, float $elevationMeters = 0): self",
+            "static withPressureAtSeaLevel(?PrinsFrank\\MeasurementUnit\\Pressure\\Pressure $value = null): self",
+            "static withPressureAtStationLevel(?PrinsFrank\\MeasurementUnit\\Pressure\\Pressure $value = null, ?PrinsFrank\\MeasurementUnit\\Length\\Length $elevation = null): self",
+            "static fromHectopascalAtSeaLevel(?float $value = null): self",
+            "static fromHectopascalAtStationLevel(?float $value = null, float $elevation = 0, string $unit = 'm'): self",
+            "static fromMillibarAtSeaLevel(?float $value = null): self",
+            "static fromMillibarAtStationLevel(?float $value = null, float $elevation = 0, string $unit = 'm'): self",
+            "static fromKilopascalAtSeaLevel(?float $value = null): self",
+            "static fromKilopascalAtStationLevel(?float $value = null, float $elevation = 0, string $unit = 'm'): self",
+            "static fromAtmAtSeaLevel(?float $value = null): self",
+            "static fromAtmAtStationLevel(?float $value = null, float $elevation = 0, string $unit = 'm'): self",
+            "hasValue(): bool",
+            "getHectopascalAtSeaLevel(): ?PrinsFrank\\MeasurementUnit\\Pressure\\Hectopascal",
+            "getHectopascalAtStationLevel(float $elevationMeters): ?PrinsFrank\\MeasurementUnit\\Pressure\\Hectopascal",
+            "getMillibarAtSeaLevel(): ?PrinsFrank\\MeasurementUnit\\Pressure\\Millibar",
+            "getMillibarAtStationLevel(float $elevationMeters): ?PrinsFrank\\MeasurementUnit\\Pressure\\Millibar",
+            "getKilopascalAtSeaLevel(): ?PrinsFrank\\MeasurementUnit\\Pressure\\Kilopascal",
+            "getKilopascalAtStationLevel(float $elevationMeters): ?PrinsFrank\\MeasurementUnit\\Pressure\\Kilopascal",
+            "getAtmAtSeaLevel(): ?PrinsFrank\\MeasurementUnit\\Pressure\\StandardAtmosphere",
+            "getAtmAtStationLevel(float $elevationMeters): ?PrinsFrank\\MeasurementUnit\\Pressure\\StandardAtmosphere",
+            "hPaAtSeaLevel(): ?float",
+            "hPaAtStationLevel(float $elevationMeters): ?float",
+            "mbAtSeaLevel(): ?float",
+            "mbAtStationLevel(float $elevationMeters): ?float",
+            "kPaAtSeaLevel(): ?float",
+            "kPaAtStationLevel(float $elevationMeters): ?float",
+            "atmAtSeaLevel(): ?float",
+            "atmAtStationLevel(float $elevationMeters): ?float",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\RelHumidity": {
+        "implements": [
+            "Meteos\\Interfaces\\RelHumidityInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withPercent(?PrinsFrank\\MeasurementUnit\\Percentage\\Percent $percent = null): self",
+            "static create(?float $percentage = null): self",
+            "static withTemperatureAndDewPoint(Meteos\\Temperature $temp, Meteos\\DewPoint $dewPoint): self",
+            "static fromTempAndDewPoint(float $temp, float $dewPoint, string $unit = 'C'): self",
+            "static fromPercentage(?float $percentage = null): self",
+            "hasValue(): bool",
+            "getPercent(): ?PrinsFrank\\MeasurementUnit\\Percentage\\Percent",
+            "percentage(): ?float",
+            "jsonSerialize(): array",
+            "static calculate(float $temp, float $dewPoint, string $unit = 'C'): float",
+            "static calculateC(float $tempC, float $dewPointC): float",
+            "static calculateF(float $tempF, float $dewPointF): float"
+        ]
+    },
+    "Meteos\\Snows": {
+        "implements": [
+            "Meteos\\Interfaces\\SnowsInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withMeasurements(?PrinsFrank\\MeasurementUnit\\Length\\Length $depth = null, ?PrinsFrank\\MeasurementUnit\\Length\\Length $new = null, ?PrinsFrank\\MeasurementUnit\\Length\\Length $variation = null): self",
+            "static create(?float $depth = null, ?float $new = null, ?float $variation = null, string $unit = 'cm'): self",
+            "static fromCentimeters(?float $depth = null, ?float $new = null, ?float $variation = null): self",
+            "static fromInches(?float $depth = null, ?float $new = null, ?float $variation = null): self",
+            "hasValue(): bool",
+            "getDepthCentimeter(): ?PrinsFrank\\MeasurementUnit\\Length\\Centimeter",
+            "getDepthInch(): ?PrinsFrank\\MeasurementUnit\\Length\\Inch",
+            "getNewCentimeter(): ?PrinsFrank\\MeasurementUnit\\Length\\Centimeter",
+            "getNewInch(): ?PrinsFrank\\MeasurementUnit\\Length\\Inch",
+            "getVariationCentimeter(): ?PrinsFrank\\MeasurementUnit\\Length\\Centimeter",
+            "getVariationInch(): ?PrinsFrank\\MeasurementUnit\\Length\\Inch",
+            "depthCentimeter(): ?float",
+            "depthInch(): ?float",
+            "newCentimeter(): ?float",
+            "newInch(): ?float",
+            "variationCentimeter(): ?float",
+            "variationInch(): ?float",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\Sunshine": {
+        "implements": [
+            "Meteos\\Interfaces\\SunshineInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withPercent(?PrinsFrank\\MeasurementUnit\\Percentage\\Percent $percent = null): self",
+            "static create(?float $percentage = null): self",
+            "static fromMinutes(?int $cumulativeMinutes = null): self",
+            "hasValue(): bool",
+            "getPercent(): ?PrinsFrank\\MeasurementUnit\\Percentage\\Percent",
+            "getCumulativeMinutes(): ?PrinsFrank\\MeasurementUnit\\Time\\Minute",
+            "percentage(): ?float",
+            "decimal(): ?float",
+            "cumulativeMinutes(): ?int",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\Temperature": {
+        "implements": [
+            "Meteos\\Interfaces\\TemperatureInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withTemperature(?PrinsFrank\\MeasurementUnit\\Temperature\\Temperature $temperature = null): self",
+            "static create(?float $value = null, string $unit = 'C'): self",
+            "static fromCelsius(?float $value = null): self",
+            "static fromFahrenheit(?float $value = null): self",
+            "static fromKelvin(?float $value = null): self",
+            "hasValue(): bool",
+            "getCelsius(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Celsius",
+            "getFahrenheit(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Fahrenheit",
+            "getKelvin(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Kelvin",
+            "celsius(): ?float",
+            "fahrenheit(): ?float",
+            "kelvin(): ?float",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\Utilities\\Arrays": {
+        "methods": [
+            "static findRowByGivenColumnsValue(array $array, mixed $needle /*The value to search for*/, string|int $column = 0 /*The column index or key to search in*/): ?array — Find a row in a 2D array by the value of a given column",
+            "static array_mean(array $arr): float",
+            "static array_avg(array $arr /*The array of numbers*/): float — Calculate the average of an array of numbers"
+        ]
+    },
+    "Meteos\\Utilities\\Convert": {
+        "properties": [
+            "static array $factors",
+            "static array $formulas"
+        ],
+        "methods": [
+            "static this(float $value, string $from_to /*The conversion type. Supported values are:*/): float — Converts a value from one unit to another based on the specified conversion type.",
+            "static celsiusToKelvin(float $value): float",
+            "static kelvinToCelsius(float $value): float",
+            "static celsiusToFahrenheit(float $value): float",
+            "static fahrenheitToCelsius(float $value): float"
+        ]
+    },
+    "Meteos\\Utilities\\Misc": {
+        "methods": [
+            "static letterDayOrNite(int|bool $isDay /*The value to convert*/): string — Convert \"is day?\" (int)0/1 or (bool)false/true to \"n\" or \"d\""
+        ]
+    },
+    "Meteos\\Utilities\\Precision": {
+        "constants": {
+            "TEMPERATURE": 1,
+            "SPEED": 2,
+            "HEIGHT": 2,
+            "DISTANCE": 2,
+            "DEPTH": 2,
+            "...": "(11 total)"
+        },
+        "methods": [
+            "static round(?float $value, int $precision = 2, int $mode = 1): ?float",
+            "static roundToInt(?float $value, int $mode = 1): ?int"
+        ]
+    },
+    "Meteos\\Visibility": {
+        "implements": [
+            "Meteos\\Interfaces\\VisibilityInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withDistance(?PrinsFrank\\MeasurementUnit\\Length\\Length $distance = null, ?int $code = null, ?string $description = null): self",
+            "static create(?float $value = null, ?int $code = null, ?string $description = null, string $unit = 'm'): self",
+            "static fromKilometers(?float $kilometers = null, ?int $code = null, ?string $description = null): self",
+            "static fromMeters(?float $meters = null, ?int $code = null, ?string $description = null): self",
+            "static fromMiles(?float $miles = null, ?int $code = null, ?string $description = null): self",
+            "static fromFeet(?float $feet = null, ?int $code = null, ?string $description = null): self",
+            "hasValue(): bool",
+            "getKilometers(): ?PrinsFrank\\MeasurementUnit\\Length\\Kilometer",
+            "getMeters(): ?PrinsFrank\\MeasurementUnit\\Length\\Meter",
+            "getMiles(): ?PrinsFrank\\MeasurementUnit\\Length\\StatuteMile",
+            "getFeet(): ?PrinsFrank\\MeasurementUnit\\Length\\Foot",
+            "getCode(): ?int",
+            "getDescription(): ?string",
+            "kilometers(): ?float",
+            "meters(): ?float",
+            "miles(): ?float",
+            "feet(): ?float",
+            "code(): ?int",
+            "description(): ?string",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\WeatherCode": {
+        "implements": [
+            "Meteos\\Interfaces\\WeatherCodeInterface",
+            "JsonSerializable"
+        ],
+        "methods": [
+            "static create(?Meteos\\Interfaces\\WeatherCodesEnumInterface $weatherCode = null): self",
+            "static createFrom(?int $code = null /*@param ?enum-string $enumClass*/, ?string $enumClass = null): self",
+            "getWeatherCode(): ?Meteos\\Interfaces\\WeatherCodesEnumInterface",
+            "jsonSerialize(): array"
+        ]
+    },
+    "Meteos\\WetBulbTemp": {
+        "implements": [
+            "Meteos\\Interfaces\\WetBulbTempInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "methods": [
+            "static withTemperature(?PrinsFrank\\MeasurementUnit\\Temperature\\Temperature $temperature = null): self",
+            "static create(?float $value = null, string $unit = 'C'): self",
+            "static fromCelsius(?float $value = null): self",
+            "static fromFahrenheit(?float $value = null): self",
+            "static fromKelvin(?float $value = null): self",
+            "static withTemperatureAndHumidity(Meteos\\Temperature $temp, Meteos\\RelHumidity $humidity): self",
+            "static fromTempAndRelHumidity(?float $temp = null, ?float $relHum = null, string $unit = 'C'): self",
+            "hasValue(): bool",
+            "getCelsius(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Celsius",
+            "getFahrenheit(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Fahrenheit",
+            "getKelvin(): ?PrinsFrank\\MeasurementUnit\\Temperature\\Kelvin",
+            "celsius(): ?float",
+            "fahrenheit(): ?float",
+            "kelvin(): ?float",
+            "jsonSerialize(): array",
+            "static calculate(float $temp, float $relHum, string $unit = 'C'): float",
+            "static calculateC(float $tempC, float $relHum): float",
+            "static calculateF(float $tempF, float $relHum): float"
+        ]
+    },
+    "Meteos\\Winds": {
+        "implements": [
+            "Meteos\\Interfaces\\WindsInterface",
+            "JsonSerializable"
+        ],
+        "uses": [
+            "Meteos\\Traits\\ValidatesInput"
+        ],
+        "constants": {
+            "CARDINALS": {
+                "0": "N",
+                "1": "NNE",
+                "2": "NE",
+                "3": "ENE",
+                "4": "E",
+                "...": "(16 total)"
+            },
+            "CARDINALS_COLORS": "array<string, {hex, rgb, hsl, oklch}> (16 entries)"
+        },
+        "methods": [
+            "static withSpeedsAndDirections(?PrinsFrank\\MeasurementUnit\\Speed\\Speed $windSpeed = null, ?PrinsFrank\\MeasurementUnit\\Angle\\Degree $windDirection = null, ?PrinsFrank\\MeasurementUnit\\Speed\\Speed $gustSpeed = null, ?PrinsFrank\\MeasurementUnit\\Angle\\Degree $gustDirection = null): self",
+            "static create(?float $windSpeed = null, ?float $windDirectionDegrees = null, ?float $gustSpeed = null, ?float $gustDirectionDegrees = null, string $unit = 'm/s'): self",
+            "static fromMetersPerSecond(?float $windSpeed = null, ?float $windDirectionDegrees = null, ?float $gustSpeed = null, ?float $gustDirectionDegrees = null): self",
+            "static fromKnots(?float $windSpeed = null, ?float $windDirectionDegrees = null, ?float $gustSpeed = null, ?float $gustDirectionDegrees = null): self",
+            "static fromKilometersPerHour(?float $windSpeed = null, ?float $windDirectionDegrees = null, ?float $gustSpeed = null, ?float $gustDirectionDegrees = null): self",
+            "static fromMilesPerHour(?float $windSpeed = null, ?float $windDirectionDegrees = null, ?float $gustSpeed = null, ?float $gustDirectionDegrees = null): self",
+            "hasValue(): bool",
+            "getWindSpeedMeterPerSecond(): ?PrinsFrank\\MeasurementUnit\\Speed\\MeterPerSecond",
+            "getWindSpeedKnot(): ?PrinsFrank\\MeasurementUnit\\Speed\\Knot",
+            "getWindSpeedKilometerPerHour(): ?PrinsFrank\\MeasurementUnit\\Speed\\KilometerPerHour",
+            "getWindSpeedMilesPerHour(): ?PrinsFrank\\MeasurementUnit\\Speed\\MilesPerHour",
+            "getGustSpeedMeterPerSecond(): ?PrinsFrank\\MeasurementUnit\\Speed\\MeterPerSecond",
+            "getGustSpeedKnot(): ?PrinsFrank\\MeasurementUnit\\Speed\\Knot",
+            "getGustSpeedKilometerPerHour(): ?PrinsFrank\\MeasurementUnit\\Speed\\KilometerPerHour",
+            "getGustSpeedMilesPerHour(): ?PrinsFrank\\MeasurementUnit\\Speed\\MilesPerHour",
+            "getWindDirection(): ?PrinsFrank\\MeasurementUnit\\Angle\\Degree",
+            "getGustDirection(): ?PrinsFrank\\MeasurementUnit\\Angle\\Degree",
+            "windSpeedMeterPerSecond(): ?float",
+            "windSpeedKnot(): ?float",
+            "windSpeedKilometerPerHour(): ?float",
+            "windSpeedMilesPerHour(): ?float",
+            "gustSpeedMeterPerSecond(): ?float",
+            "gustSpeedKnot(): ?float",
+            "gustSpeedKilometerPerHour(): ?float",
+            "gustSpeedMilesPerHour(): ?float",
+            "windDirectionDegrees(): ?float",
+            "gustDirectionDegrees(): ?float",
+            "windDirectionCompass(): ?string",
+            "gustDirectionCompass(): ?string",
+            "jsonSerialize(): array",
+            "static getCardinalColor(string $cardinal /*The cardinal direction (e.g., 'N', 'NE', 'E', etc.)*/): array — Get the color associated with a cardinal direction. @throws InvalidArgumentException",
+            "static cardinalToDegrees(string $cardinal): ?float",
+            "static degreesToCardinals(float $degrees /*The angle in degrees.*/): array — Convert degrees to cardinal directions.",
+            "static degreesToCardinals16(float $degrees): string",
+            "static degreesToCardinals8(float $degrees): string",
+            "static getWindSpeedRangeKnots(float $metersPerSecond): string",
+            "static roundToNearest5Knots(float $metersPerSecond): int",
+            "static calculateHarmonizedWindSpeed(float $speedMS /*The average wind speed in meters per second*/, float $gustMS /*The gust wind speed in meters per second*/): float — Calculate harmonized average wind speed @throws InvalidArgumentException",
+            "static calculateGx(float $Umax /*The maximum wind speed.*/, float $U /*The current wind speed.*/, float $sigmaU /*The standard deviation of the wind speed.*/): float — Calculate gx based on the given parameters.",
+            "static calculateSigmaU(array $windSpeeds /*Array of wind speed values.*/): float — Calculate the standard deviation of wind speed values. @throws InvalidArgumentException"
+        ]
+    }
+}

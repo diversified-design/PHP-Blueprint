@@ -1,0 +1,118 @@
+{
+    "ScraperBelt\\ScrapeCacher\\ScrapeCacher": {
+        "methods": [
+            "__construct(ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger $logger)",
+            "putData(string $filePath, mixed $data, ?string $format = null, int $jsonOptions = 4194560): void",
+            "readFile(string $filePath /*The path to the file.*/): string — Reads a file and returns its contents. @throws IOExceptionInterface|ScrapeException",
+            "readJsonAsArray(string $filePath): array — Convenience method to read a JSON file and return it as an array",
+            "readJsonAsArrayAndTimestamp(string $filePath /*The path to the JSON file.*/): array — Reads JSON as array and appends a UNIX timestamp under 'scraper_ts'.",
+            "static keepLatestFiles(string $dirPath /*The path to the directory.*/, int $limit /*The maximum number of files to keep.*/, array $ignore = [] /*An array of filenames to ignore.*/, bool $verbose = false /*Whether to print verbose output.*/): array — Keep only the latest files in a directory @throws \\InvalidArgumentException"
+        ]
+    },
+    "ScraperBelt\\ScrapeCaser\\ScrapeCaser": {
+        "methods": [
+            "__construct(bool $uniqueIsNew, bool $checkedDataIsNew, bool $watcherIsSet)",
+            "getCase(): string"
+        ]
+    },
+    "ScraperBelt\\ScrapeCaser\\ScrapeChecker": {
+        "methods": [
+            "__construct(array $previousStatusData /*@param array<string,mixed> $fetchedData*/, array $fetchedData, string $uniqueField /*@param array<string> $fieldsToCheck*/, array $fieldsToCheck) — ScrapeChecker constructor.",
+            "isUniqueNew(): bool",
+            "getCheckedData(): array — Gets the checked data.",
+            "setCheckedDataIsNew(bool $case): void",
+            "isCheckedDataNew(): bool"
+        ]
+    },
+    "ScraperBelt\\ScrapeCaser\\ScrapeWatcher": {
+        "doc": "Watcher A class to \"watch\" special cases of a Scraper/Keeper target over time in order to mitigate the effects of human error on the data source side.",
+        "methods": [
+            "__construct(string $path)",
+            "set(): void",
+            "isWatching(): bool",
+            "unset(): void",
+            "getPath(): string"
+        ]
+    },
+    "ScraperBelt\\ScrapeFetcher\\ScrapeFetcher": {
+        "methods": [
+            "__construct(array $config /*Configuration options for the fetcher.*/, ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger $logger /*Logger instance for logging errors and exceptions.*/) — ScrapeFetcher constructor. @throws \\InvalidArgumentException|\\Throwable",
+            "setUrl(string $url): void",
+            "executeRequest(): void",
+            "close(bool $return = false): ?string",
+            "getHeaders(): array — Fetches the response headers. @throws ClientException|ServerException|TransportException",
+            "getRawContent(): string — Fetches the raw content of the response. @throws ClientException|ServerException|TransportException",
+            "getHeadAndRawCont(): array — Fetches the response headers & raw content. @throws ClientException|ServerException|TransportException",
+            "getElementsObj(string $selector): Symfony\\Component\\DomCrawler\\Crawler — Fetches the response Object. @throws \\Throwable",
+            "getElementsArray(string $selector /*The CSS selector to filter the response Object.*/, array|string $extract = [] /*The fields to extract from the response Object.*/): ?array — Fetches the response Object as an array. @throws \\Throwable",
+            "getIt(string $selector /*The CSS selector to filter the response Object.*/, array|string $extract = [] /*The fields to extract from the response Object.*/, bool $strict = false /*If true, throws an exception if no elements are found.*/): ?string — Fetches the first element from the response Object. @throws \\Throwable",
+            "getItJsonPath(string $jsonPath /*The JSONPath expression to evaluate.*/, bool $strict = false /*If true, throws an exception if no elements are found.*/): ?array — Fetches a JSON value using JSONPath. @throws \\Throwable",
+            "fetchJsonAsArray(): array — Fetches a JSON response and, if valid, returns it as an array. @throws ClientException|ServerException|TransportException|JsonException",
+            "getRandoUserAgent(): string — Returns a random user agent from the user_agents.json file. @throws \\RuntimeException",
+            "static getRandoUserAgentStatic(): string — Returns a random user agent from the user_agents.json file. @throws \\RuntimeException"
+        ]
+    },
+    "ScraperBelt\\ScrapeFetcher\\TryAgain": {
+        "implements": [
+            "Symfony\\Component\\HttpClient\\Retry\\RetryStrategyInterface"
+        ],
+        "methods": [
+            "__construct(int $max_retries, int $retry_delay, ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger $logger)",
+            "shouldRetry(Symfony\\Component\\HttpClient\\Response\\AsyncContext $context, ?string $responseContent, ?Symfony\\Contracts\\HttpClient\\Exception\\TransportExceptionInterface $exception): ?bool",
+            "getDelay(Symfony\\Component\\HttpClient\\Response\\AsyncContext $context, ?string $responseContent, ?Symfony\\Contracts\\HttpClient\\Exception\\TransportExceptionInterface $exception): int"
+        ]
+    },
+    "ScraperBelt\\ScrapeKeeper\\ScrapeKeeper": {
+        "methods": [
+            "__construct(array $config /*Configuration options for the keeper.*/, ScraperBelt\\ScrapeLogger\\ScrapeLogger|ScraperBelt\\ScrapeLogger\\NullScrapeLogger $logger /*Logger instance for logging errors and exceptions.*/) — ScrapeKeeper constructor. @throws ScrapeException",
+            "close(bool $return = false): ?string",
+            "insert(string $table /*The name of the table to insert data into.*/, array $data /*An associative array of data to insert.*/, string $conflict = 'ABORT' /*The conflict resolution strategy (default: \"ABORT\").*/): void — Inserts data into a specified table. @throws PDOException",
+            "update(string $table /*The name of the table to update.*/, array $data /*An associative array of data to update.*/, string $condition /*The condition for the update (e.g., \"id = 1\").*/): void — Updates data in a specified table based on a condition. @throws PDOException",
+            "select(string $sql /*@return array<mixed>*/): array @throws \\InvalidArgumentException|\\PDOException",
+            "createTable(string $sql): void"
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\NullScrapeLogger": {
+        "extends": "Psr\\Log\\NullLogger",
+        "methods": [
+            "justLog(string $message = '' /*The message to log.*/, mixed $logLevel = Level::Info /*— The log level (a Monolog, PSR-3 or RFC 5424 level)*/): void — NOOP: Logs a message with the specified log level.",
+            "handleException(Throwable $e /*The exception to handle.*/, string $logLevel = 'error' /*The log level to use.*/, bool $exceptionLogged = false /*Reference to a boolean indicating if the exception has been logged.*/, array $context = [] /*Additional context for the log message.*/, int $errorCode = 0 /*An optional error code.*/, bool $throwException = true): void — NOOP: Handles exceptions by logging them. @throws \\Throwable"
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\ScrapeException": {
+        "extends": "Exception",
+        "constants": {
+            "ERROR_CODE_FETCH": 1001,
+            "ERROR_CODE_SAVE": 1002,
+            "ERROR_CODE_PARSE": 1003,
+            "ERROR_CODE_VALIDATION": 1004,
+            "ERROR_CODE_FILE_SYSTEM": 1005,
+            "ERROR_CODE_LOGGING": 1006
+        },
+        "methods": [
+            "__construct(string $message = '' /*The error message.*/, int $code = 0 /*The error code.*/, ?Throwable $previous = null /*The previous exception, if any.*/, array $context = [] /*Additional context for the exception.*/) — Constructor for ScrapeException.",
+            "getContext(): array — Get the context of the exception."
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\ScrapeLogger": {
+        "extends": "Psr\\Log\\AbstractLogger",
+        "methods": [
+            "__construct(array $config /*Configuration options for the logger.*/) — ScrapeLogger constructor. @throws \\RuntimeException",
+            "justLog(string $message /*The message to log.*/, mixed $logLevel = Level::Info /*— The log level (a Monolog, PSR-3 or RFC 5424 level)*/): void — Logs a message with the specified log level.",
+            "handleException(Throwable $e /*The original exception.*/, mixed $logLevel = Level::Error /*The default log level (may be overridden by config).*/, bool $exceptionLogged = false, array $context = [] /*Additional context for the log.*/, bool $throwException = true /*Whether to rethrow the exception after logging.*/): void — Logs an exception and optionally rethrows it. @throws \\Throwable",
+            "log(mixed $level, Stringable|string $message, array $context = []): void",
+            "emergency(Stringable|string $message, array $context = []): void",
+            "alert(Stringable|string $message, array $context = []): void",
+            "critical(Stringable|string $message, array $context = []): void",
+            "error(Stringable|string $message, array $context = []): void",
+            "warning(Stringable|string $message, array $context = []): void",
+            "notice(Stringable|string $message, array $context = []): void",
+            "info(Stringable|string $message, array $context = []): void",
+            "debug(Stringable|string $message, array $context = []): void"
+        ]
+    },
+    "ScraperBelt\\ScrapeLogger\\ZipRotatingFileHandler": {
+        "doc": "Extends Symfony's RotatingFileHandler to create a gzipped copy of the log file before removing it.",
+        "extends": "Monolog\\Handler\\RotatingFileHandler"
+    }
+}
