@@ -22,7 +22,7 @@ vendor/bin/blueprint src/
 vendor/bin/blueprint src/ --namespace="Vendor\\Package"
 
 # Specify output file
-vendor/bin/blueprint src/ --namespace="Vendor\\Package" -o api.json
+vendor/bin/blueprint src/ --namespace="Vendor\\Package" -o blueprint.json
 
 # Include private/protected members
 vendor/bin/blueprint src/ --namespace="Vendor\\Package" --include-private
@@ -33,7 +33,7 @@ vendor/bin/blueprint src/ --namespace="Vendor\\Package" --short-docs
 # All options
 vendor/bin/blueprint src/ \
   --namespace="Vendor\\Package" \
-  -o api.json \
+  -o blueprint.json \
   --include-private \
   --include-internal \
   --short-docs \
@@ -44,7 +44,7 @@ vendor/bin/blueprint src/ \
 
 | Option | Short | Description |
 |--------|-------|-------------|
-| `--output` | `-o` | Output JSON file path (default: `library-api.json`) |
+| `--output` | `-o` | Output JSON file path (default: `blueprint.json`) |
 | `--namespace` | | Filter by namespace prefix (e.g. `Vendor\\Package`) |
 | `--include-private` | | Include private/protected members |
 | `--include-internal` | | Include `\Internal\` namespace classes |
@@ -58,7 +58,7 @@ Add to your project's `composer.json`:
 ```json
 {
     "scripts": {
-        "blueprint": "blueprint src/ --namespace=Vendor\\\\Package -o api.json"
+        "blueprint": "blueprint src/ --namespace=Vendor\\\\Package -o blueprint.json"
     }
 }
 ```
@@ -69,14 +69,14 @@ Then run with `composer blueprint`.
 
 ```yaml
 # GitHub Actions example
-- name: Generate API blueprint
-  run: vendor/bin/blueprint src/ --namespace="Vendor\\Package" -o api-surface.json
+- name: Generate PHP library blueprint
+  run: vendor/bin/blueprint src/ --namespace="Vendor\\Package" -o blueprint.json
 
 - name: Upload as artifact
   uses: actions/upload-artifact@v4
   with:
-    name: api-blueprint
-    path: api-surface.json
+    name: php-blueprint
+    path: blueprint.json
 ```
 
 ## Output Format
