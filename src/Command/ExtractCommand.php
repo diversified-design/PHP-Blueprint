@@ -50,7 +50,7 @@ class ExtractCommand extends Command
         // Resolve path: CLI arg > config > error
         $path = $input->getArgument('path') ?? ($config['path'] ?? null);
         if ($path === null) {
-            $output->writeln('<error>No path provided. Pass a directory argument or set "path" in ' . self::CONFIG_FILENAME . '.</error>');
+            $output->writeln('<error>No path provided. Pass a directory argument or set "path" in '.self::CONFIG_FILENAME.'.</error>');
 
             return Command::FAILURE;
         }
@@ -90,8 +90,8 @@ class ExtractCommand extends Command
         $generator->saveToFile($resolvedOutput);
 
         $size = filesize($resolvedOutput);
-        $unit = $size > 1024 ? round($size / 1024, 1) . 'KB' : $size . 'B';
-        $output->writeln("Extracted " . count($apiMap) . " classes → {$resolvedOutput} ({$unit})");
+        $unit = $size > 1024 ? round($size / 1024, 1).'KB' : $size.'B';
+        $output->writeln("Extracted ".count($apiMap)." classes → {$resolvedOutput} ({$unit})");
 
         return Command::SUCCESS;
     }

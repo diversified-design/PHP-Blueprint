@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Blueprint;
 
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionEnum;
@@ -44,6 +50,10 @@ class BlueprintGenerator
     /** @var list<string> */
     private array $excludeNamespaces;
 
+    private Lexer $lexer;
+
+    private PhpDocParser $phpDocParser;
+
     /**
      * @param list<string> $excludeNamespaces
      */
@@ -55,6 +65,12 @@ class BlueprintGenerator
         $this->shortDocs             = $shortDocs;
         $this->compactEnumsThreshold = $compactEnumsThreshold;
         $this->excludeNamespaces     = $excludeNamespaces;
+
+        $config              = new ParserConfig([]);
+        $this->lexer         = new Lexer($config);
+        $constExprParser     = new ConstExprParser($config);
+        $typeParser          = new TypeParser($config, $constExprParser);
+        $this->phpDocParser  = new PhpDocParser($config, $typeParser, $constExprParser);
     }
 
     /**
@@ -345,6 +361,9 @@ class BlueprintGenerator
                 continue;
             }
 
+            // Parse @var type from property docblock
+            $varType = $this->extractVarType($property->getDocComment());
+
             $sig = '';
             if ($property->isStatic()) {
                 $sig .= 'static ';
@@ -352,7 +371,11 @@ class BlueprintGenerator
             if ($property->isReadOnly()) {
                 $sig .= 'readonly ';
             }
-            if ($property->hasType()) {
+
+            // Prefer docblock @var type over native type
+            if ($varType !== null) {
+                $sig .= $varType.' ';
+            } elseif ($property->hasType()) {
                 $sig .= $this->getTypeString($property->getType()).' ';
             }
             $sig .= '$'.$property->getName();
@@ -389,7 +412,7 @@ class BlueprintGenerator
             }
 
             $docComment = $method->getDocComment();
-            $docTags    = $this->extractDocTags($docComment);
+            $docTags    = $this->parseDocBlock($docComment);
 
             $sig = '';
             if ($method->isStatic()) {
@@ -399,8 +422,13 @@ class BlueprintGenerator
             $sig .= $this->formatParameters($method, $docTags['params']);
             $sig .= ')';
 
-            if ($method->hasReturnType()) {
-                $sig .= ': '.$this->getTypeString($method->getReturnType());
+            // Return type: prefer docblock @return over native type
+            $returnType = $docTags['return'];
+            if ($returnType === null && $method->hasReturnType()) {
+                $returnType = $this->getTypeString($method->getReturnType());
+            }
+            if ($returnType !== null) {
+                $sig .= ': '.$returnType;
             }
 
             // Append brief doc summary if available
@@ -420,15 +448,24 @@ class BlueprintGenerator
         return $result;
     }
 
-    /** @param array<string, string> $paramDocs */
+    /**
+     * @param array<string, array{type: string|null, description: string}> $paramDocs
+     */
     private function formatParameters(ReflectionMethod $method, array $paramDocs = []): string
     {
         $params = [];
         foreach ($method->getParameters() as $param) {
-            $p = '';
-            if ($param->hasType()) {
+            $p        = '';
+            $paramKey = '$'.$param->getName();
+            $docType  = $paramDocs[$paramKey]['type'] ?? null;
+
+            // Prefer docblock type over native type
+            if ($docType !== null) {
+                $p .= $docType.' ';
+            } elseif ($param->hasType()) {
                 $p .= $this->getTypeString($param->getType()).' ';
             }
+
             if ($param->isVariadic()) {
                 $p .= '...';
             }
@@ -449,9 +486,9 @@ class BlueprintGenerator
             }
 
             // Append @param description if available
-            $paramKey = '$'.$param->getName();
-            if (isset($paramDocs[$paramKey])) {
-                $p .= ' /*'.$paramDocs[$paramKey].'*/';
+            $description = $paramDocs[$paramKey]['description'] ?? '';
+            if ($description !== '') {
+                $p .= ' /*'.$description.'*/';
             }
 
             $params[] = $p;
@@ -501,36 +538,69 @@ class BlueprintGenerator
     }
 
     /**
-     * Parse @throws and @param tags from a docblock.
+     * Parse a docblock using phpstan/phpdoc-parser to extract typed @param, @return, and @throws tags.
      *
-     * @return array{throws: list<string>, params: array<string, string>}
+     * @return array{throws: list<string>, params: array<string, array{type: string|null, description: string}>, return: string|null}
      */
-    private function extractDocTags(?string $docblock): array
+    private function parseDocBlock(?string $docblock): array
     {
-        $result = ['throws' => [], 'params' => []];
+        $result = ['throws' => [], 'params' => [], 'return' => null];
         if (!$docblock) {
             return $result;
         }
 
-        $cleaned = preg_replace('/^\s*\/?\*+\/?\s*$/m', '', $docblock);
-        $cleaned = preg_replace('/^\s*\*\s?/m', '', $cleaned);
+        try {
+            $tokens     = new TokenIterator($this->lexer->tokenize($docblock));
+            $phpDocNode = $this->phpDocParser->parse($tokens);
 
-        // Extract @throws Type Description
-        if (preg_match_all('/@throws\s+(\S+)(?:\s+(.+))?/m', $cleaned, $matches, PREG_SET_ORDER)) {
-            foreach ($matches as $m) {
-                $result['throws'][] = $m[1];
+            // @param tags
+            foreach ($phpDocNode->getParamTagValues() as $tag) {
+                $result['params'][$tag->parameterName] = [
+                    'type'        => (string) $tag->type,
+                    'description' => trim($tag->description),
+                ];
+            }
+
+            // @return tag (first one wins)
+            foreach ($phpDocNode->getReturnTagValues() as $tag) {
+                $result['return'] = (string) $tag->type;
+
+                break;
+            }
+
+            // @throws tags
+            foreach ($phpDocNode->getThrowsTagValues() as $tag) {
+                $result['throws'][] = (string) $tag->type;
             }
             $result['throws'] = array_values(array_unique($result['throws']));
-        }
-
-        // Extract @param Type $name Description
-        if (preg_match_all('/@param\s+\S+\s+\$(\w+)\s+(.+)/m', $cleaned, $matches, PREG_SET_ORDER)) {
-            foreach ($matches as $m) {
-                $result['params']['$'.$m[1]] = trim($m[2]);
-            }
+        } catch (Throwable) {
+            // Malformed docblock — return empty results
         }
 
         return $result;
+    }
+
+    /**
+     * Extract @var type from a property docblock.
+     */
+    private function extractVarType(?string $docblock): ?string
+    {
+        if (!$docblock) {
+            return null;
+        }
+
+        try {
+            $tokens     = new TokenIterator($this->lexer->tokenize($docblock));
+            $phpDocNode = $this->phpDocParser->parse($tokens);
+
+            foreach ($phpDocNode->getVarTagValues() as $tag) {
+                return (string) $tag->type;
+            }
+        } catch (Throwable) {
+            // Malformed docblock
+        }
+
+        return null;
     }
 
     /**
