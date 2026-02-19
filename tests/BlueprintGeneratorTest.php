@@ -331,8 +331,7 @@ test('@throws are appended to method signature', function () {
     $methods    = $map['TestFixtures\\DocblockRichClass']['methods'];
     $processSig = findFirst($methods, fn ($m) => str_contains($m, 'processItem'));
 
-    // phpdoc-parser preserves leading backslash from docblock
-    expect($processSig)->toContain('@throws \\InvalidArgumentException|\\RuntimeException');
+    expect($processSig)->toContain('@throws InvalidArgumentException|RuntimeException');
 });
 
 test('@param description is appended as inline comment', function () {
