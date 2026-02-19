@@ -6,7 +6,7 @@ A Composer package (`diversified-design/php-blueprint`) that generates a JSON bl
 
 ```
 bin/blueprint                    — CLI entry point (symfony/console)
-src/ApiExtractor.php             — Core extraction logic (Blueprint\ApiExtractor)
+src/BlueprintGenerator.php       — Core extraction logic (Blueprint\BlueprintGenerator)
 src/Command/ExtractCommand.php   — CLI command (Blueprint\Command\ExtractCommand)
 examples/                        — Sample output files
 ```

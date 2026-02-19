@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Blueprint\Command;
 
-use Blueprint\ApiExtractor;
+use Blueprint\BlueprintGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +23,7 @@ class ExtractCommand extends Command
     {
         $this
             ->addArgument('path', InputArgument::REQUIRED, 'Directory to scan for PHP files')
-            ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Output JSON file path', 'blueprint.json')
+            ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Output JSON file path (default: blueprint.json in working directory)', 'blueprint.json')
             ->addOption('namespace', null, InputOption::VALUE_REQUIRED, 'Filter by namespace prefix (e.g. "Vendor\\Package")', '')
             ->addOption('include-private', null, InputOption::VALUE_NONE, 'Include private/protected members')
             ->addOption('include-internal', null, InputOption::VALUE_NONE, 'Include \\Internal\\ namespace classes')
@@ -47,7 +47,7 @@ class ExtractCommand extends Command
         $shortDocs    = $input->getOption('short-docs');
         $compactEnums = $input->getOption('compact-enums') ? 5 : 0;
 
-        $extractor = new ApiExtractor($namespace, $publicOnly, $skipInternal, $shortDocs, $compactEnums);
+        $extractor = new BlueprintGenerator($namespace, $publicOnly, $skipInternal, $shortDocs, $compactEnums);
         $apiMap    = $extractor->extractFromDirectory($libraryPath);
 
         $outputPath = Path::canonicalize($input->getOption('output'));
