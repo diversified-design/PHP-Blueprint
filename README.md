@@ -44,12 +44,45 @@ vendor/bin/blueprint src/ \
 
 | Option | Short | Description |
 |--------|-------|-------------|
-| `--output` | `-o` | Output JSON file path (default: `blueprint.json`) |
+| `--output` | `-o` | Output JSON file path (default: `blueprint.json` in working directory) |
 | `--namespace` | | Filter by namespace prefix (e.g. `Vendor\\Package`) |
+| `--exclude` | | Exclude namespace prefix (repeatable) |
 | `--include-private` | | Include private/protected members |
 | `--include-internal` | | Include `\Internal\` namespace classes |
 | `--short-docs` | | Truncate doc summaries to first sentence |
 | `--compact-enums` | | Truncate large constant/enum lists (>5 entries) |
+| `--config` | `-c` | Path to config file |
+| `--no-config` | | Ignore config file |
+
+## Configuration
+
+Create a `blueprint.config.php` in your project root:
+
+```php
+<?php
+
+return [
+    'path'             => 'src/',
+    'output'           => 'blueprint.json',
+    'namespace'        => 'Vendor\\Package',
+    'exclude'          => [
+        'Vendor\\Package\\Internal\\',
+        'Vendor\\Package\\Debug\\',
+    ],
+    'include-private'  => false,
+    'include-internal' => false,
+    'short-docs'       => true,
+    'compact-enums'    => false,
+];
+```
+
+All keys are optional. When a config file is present, you can run Blueprint with no arguments:
+
+```bash
+vendor/bin/blueprint
+```
+
+CLI arguments always override config values. Use `--no-config` to ignore the config file, or `--config path/to/config.php` to use a different one.
 
 ### Composer Scripts
 

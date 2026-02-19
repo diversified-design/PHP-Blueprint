@@ -41,13 +41,20 @@ class BlueprintGenerator
 
     private int $compactEnumsThreshold;
 
-    public function __construct(string $namespaceFilter = '', bool $publicOnly = true, bool $skipInternal = true, bool $shortDocs = false, int $compactEnumsThreshold = 0)
+    /** @var list<string> */
+    private array $excludeNamespaces;
+
+    /**
+     * @param list<string> $excludeNamespaces
+     */
+    public function __construct(string $namespaceFilter = '', bool $publicOnly = true, bool $skipInternal = true, bool $shortDocs = false, int $compactEnumsThreshold = 0, array $excludeNamespaces = [])
     {
         $this->namespaceFilter       = $namespaceFilter;
         $this->publicOnly            = $publicOnly;
         $this->skipInternal          = $skipInternal;
         $this->shortDocs             = $shortDocs;
         $this->compactEnumsThreshold = $compactEnumsThreshold;
+        $this->excludeNamespaces     = $excludeNamespaces;
     }
 
     /**
@@ -99,6 +106,13 @@ class BlueprintGenerator
         if ($this->skipInternal) {
             $relative = substr($className, strlen($this->namespaceFilter));
             if (str_contains($relative, '\\Internal\\') || str_starts_with($relative, 'Internal\\')) {
+                return false;
+            }
+        }
+
+        // Skip explicitly excluded namespace prefixes
+        foreach ($this->excludeNamespaces as $excluded) {
+            if (str_starts_with($className, $excluded)) {
                 return false;
             }
         }
