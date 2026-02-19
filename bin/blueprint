@@ -26,9 +26,11 @@ if (!$autoloaderFound) {
 }
 
 use Blueprint\Command\ExtractCommand;
+use Composer\InstalledVersions;
 use Symfony\Component\Console\Application;
 
-$application = new Application('php-blueprint', '0.1.0');
+$version = InstalledVersions::getPrettyVersion('diversified-design/php-blueprint') ?? 'dev';
+$application = new Application('php-blueprint', $version);
 $command = new ExtractCommand();
 $application->addCommand($command);
 $application->setDefaultCommand($command->getName(), true);
