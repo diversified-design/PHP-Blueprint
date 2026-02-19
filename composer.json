@@ -9,6 +9,22 @@
             "email": "contact@diversified.design"
         }
     ],
+    "keywords":[
+        "php",
+        "llm",
+        "ai",
+        "code-generation",
+        "static-analysis",
+        "reflection",
+        "api-documentation",
+        "class-signatures",
+        "context",
+        "blueprint",
+        "json",
+        "cli",
+        "developer-tools",
+        "ci-cd"
+    ],
     "autoload": {
         "psr-4": {
             "Blueprint\\": "src/"
