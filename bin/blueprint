@@ -4,11 +4,11 @@
 declare(strict_types=1);
 
 // Find Composer autoloader
-// When installed as a dependency: bin/ -> ../vendor/autoload.php (via symlink in vendor/bin/)
-// When running from source: bin/ -> ../vendor/autoload.php
+// From source:     bin/blueprint -> ../vendor/autoload.php
+// As dependency:   vendor/diversified-design/php-blueprint/bin/blueprint -> ../../../autoload.php
 $autoloadPaths = [
     __DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../autoload.php',
+    __DIR__ . '/../../../autoload.php',
 ];
 
 $autoloaderFound = false;
