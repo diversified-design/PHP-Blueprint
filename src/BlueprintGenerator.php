@@ -27,8 +27,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 
 /**
- * PHP Blueprint — BlueprintGenerator
- *
  * Generates a JSON blueprint of a PHP library's class signatures
  * via static analysis (no code execution), suitable for LLM context.
  */
@@ -74,7 +72,7 @@ class BlueprintGenerator
     }
 
     /**
-     * Extract class signatures from a directory of PHP files.
+     * Extracts class signatures from a directory of PHP files.
      *
      * @return array<string, array<string, mixed>>
      */
