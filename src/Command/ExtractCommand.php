@@ -36,25 +36,26 @@ class ExtractCommand extends Command
         $libraryPath = Path::canonicalize($input->getArgument('path'));
 
         if (!is_dir($libraryPath)) {
-            $output->writeln("<error>Directory not found: $libraryPath</error>");
+            $output->writeln("<error>Directory not found: {$libraryPath}</error>");
+
             return Command::FAILURE;
         }
 
-        $namespace = $input->getOption('namespace');
-        $publicOnly = !$input->getOption('include-private');
+        $namespace    = $input->getOption('namespace');
+        $publicOnly   = !$input->getOption('include-private');
         $skipInternal = !$input->getOption('include-internal');
-        $shortDocs = $input->getOption('short-docs');
+        $shortDocs    = $input->getOption('short-docs');
         $compactEnums = $input->getOption('compact-enums') ? 5 : 0;
 
         $extractor = new ApiExtractor($namespace, $publicOnly, $skipInternal, $shortDocs, $compactEnums);
-        $apiMap = $extractor->extractFromDirectory($libraryPath);
+        $apiMap    = $extractor->extractFromDirectory($libraryPath);
 
         $outputPath = Path::canonicalize($input->getOption('output'));
         $extractor->saveToFile($outputPath);
 
         $size = filesize($outputPath);
-        $unit = $size > 1024 ? round($size / 1024, 1) . 'KB' : $size . 'B';
-        $output->writeln("Extracted " . count($apiMap) . " classes → $outputPath ($unit)");
+        $unit = $size > 1024 ? round($size / 1024, 1).'KB' : $size.'B';
+        $output->writeln("Extracted ".count($apiMap)." classes → {$outputPath} ({$unit})");
 
         return Command::SUCCESS;
     }

@@ -18,6 +18,7 @@ use Roave\BetterReflection\SourceLocator\Type\AutoloadSourceLocator;
 use Roave\BetterReflection\SourceLocator\Type\DirectoriesSourceLocator;
 use Roave\BetterReflection\SourceLocator\Type\PhpInternalSourceLocator;
 use Symfony\Component\Filesystem\Filesystem;
+use Throwable;
 
 /**
  * PHP Blueprint — ApiExtractor
@@ -27,31 +28,39 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class ApiExtractor
 {
+    /** @var array<string, array<string, mixed>> */
     private array $apiMap = [];
+
     private string $namespaceFilter;
+
     private bool $publicOnly;
+
     private bool $skipInternal;
+
     private bool $shortDocs;
+
     private int $compactEnumsThreshold;
 
     public function __construct(string $namespaceFilter = '', bool $publicOnly = true, bool $skipInternal = true, bool $shortDocs = false, int $compactEnumsThreshold = 0)
     {
-        $this->namespaceFilter = $namespaceFilter;
-        $this->publicOnly = $publicOnly;
-        $this->skipInternal = $skipInternal;
-        $this->shortDocs = $shortDocs;
+        $this->namespaceFilter       = $namespaceFilter;
+        $this->publicOnly            = $publicOnly;
+        $this->skipInternal          = $skipInternal;
+        $this->shortDocs             = $shortDocs;
         $this->compactEnumsThreshold = $compactEnumsThreshold;
     }
 
     /**
      * Extract class signatures from a directory of PHP files.
+     *
+     * @return array<string, array<string, mixed>>
      */
     public function extractFromDirectory(string $directory): array
     {
         $this->apiMap = [];
 
         $betterReflection = new BetterReflection();
-        $astLocator = $betterReflection->astLocator();
+        $astLocator       = $betterReflection->astLocator();
 
         // DirectoriesSourceLocator scans the target directory (provides class enumeration).
         // AutoloadSourceLocator + PhpInternalSourceLocator resolve parent classes,
@@ -70,6 +79,7 @@ class ApiExtractor
         }
 
         ksort($this->apiMap);
+
         return $this->apiMap;
     }
 
@@ -168,11 +178,14 @@ class ApiExtractor
         if ($reflection->isEnum()) {
             return 'enum';
         }
+
         return 'class';
     }
 
     /**
      * Get only interfaces directly implemented by this class (not inherited).
+     *
+     * @return list<string>
      */
     private function getOwnInterfaces(ReflectionClass $reflection): array
     {
@@ -180,18 +193,20 @@ class ApiExtractor
 
         // Filter out UnitEnum/BackedEnum (auto-added for enums)
         $exclude = ['UnitEnum', 'BackedEnum'];
-        $result = [];
+        $result  = [];
         foreach ($immediate as $iface) {
             if (!in_array($iface->getName(), $exclude, true)) {
                 $result[] = $iface->getName();
             }
         }
+
         return $result;
     }
 
+    /** @return array<string|int, mixed> */
     private function extractConstants(ReflectionClass $reflection): array
     {
-        $type = $this->getClassType($reflection);
+        $type   = $this->getClassType($reflection);
         $result = [];
 
         // For enums, list the case names/values via ReflectionEnum
@@ -201,7 +216,7 @@ class ApiExtractor
                 if ($isBacked) {
                     try {
                         $result[$case->getName()] = $case->getValue();
-                    } catch (\Throwable) {
+                    } catch (Throwable) {
                         $result[$case->getName()] = null;
                     }
                 } else {
@@ -237,13 +252,16 @@ class ApiExtractor
     {
         try {
             return $const->getValue();
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return '<expr>';
         }
     }
 
     /**
      * Truncate a constants array if it exceeds the compact-enums threshold.
+     *
+     * @param  array<string|int, mixed> $constants
+     * @return array<string|int, mixed>
      */
     private function truncateConstants(array $constants): array
     {
@@ -252,9 +270,10 @@ class ApiExtractor
             return $constants;
         }
 
-        $total = count($constants);
-        $truncated = array_slice($constants, 0, $threshold, true);
-        $truncated['...'] = '(' . $total . ' total)';
+        $total            = count($constants);
+        $truncated        = array_slice($constants, 0, $threshold, true);
+        $truncated['...'] = '('.$total.' total)';
+
         return $truncated;
     }
 
@@ -271,29 +290,34 @@ class ApiExtractor
         foreach ($value as $v) {
             if (is_array($v)) {
                 $hasNested = true;
+
                 break;
             }
         }
         if (!$hasNested) {
             return $this->compactEnumsThreshold > 0 && count($value) > $this->compactEnumsThreshold
-                ? array_merge(array_slice($value, 0, $this->compactEnumsThreshold, true), ['...' => '(' . count($value) . ' total)'])
+                ? array_merge(array_slice($value, 0, $this->compactEnumsThreshold, true), ['...' => '('.count($value).' total)'])
                 : $value;
         }
         // Nested structure: summarise as "array<key-type, shape>"
-        $count = count($value);
+        $count    = count($value);
         $firstKey = array_key_first($value);
         $firstVal = $value[$firstKey];
-        $keys = is_string($firstKey) ? 'string' : 'int';
+        $keys     = is_string($firstKey) ? 'string' : 'int';
         if (is_array($firstVal)) {
             $shape = implode(', ', array_keys($firstVal));
+
             return "array<{$keys}, {{$shape}}> ({$count} entries)";
         }
+
         return "array<{$keys}> ({$count} entries)";
     }
 
     /**
      * Extract properties as compact signature strings.
      * Format: "Type $name" or "static Type $name = default"
+     *
+     * @return list<string>
      */
     private function extractProperties(ReflectionClass $reflection): array
     {
@@ -303,7 +327,7 @@ class ApiExtractor
                 continue;
             }
             // Skip the auto-generated 'name' and 'value' properties on enums
-            if ($this->getClassType($reflection) === 'enum' && in_array($property->getName(), ['name', 'value'])) {
+            if ($this->getClassType($reflection) === 'enum' && in_array($property->getName(), ['name', 'value'], true)) {
                 continue;
             }
 
@@ -315,18 +339,21 @@ class ApiExtractor
                 $sig .= 'readonly ';
             }
             if ($property->hasType()) {
-                $sig .= $this->getTypeString($property->getType()) . ' ';
+                $sig .= $this->getTypeString($property->getType()).' ';
             }
-            $sig .= '$' . $property->getName();
+            $sig .= '$'.$property->getName();
 
             $result[] = $sig;
         }
+
         return $result;
     }
 
     /**
      * Extract methods as compact signature strings.
      * Format: "static methodName(Type $param, Type $param2 = default): ReturnType — Summary"
+     *
+     * @return list<string>
      */
     private function extractMethods(ReflectionClass $reflection): array
     {
@@ -342,61 +369,63 @@ class ApiExtractor
             // Skip auto-generated enum methods
             if ($this->getClassType($reflection) === 'enum') {
                 $enumMethods = ['cases', 'from', 'tryFrom'];
-                if (in_array($method->getName(), $enumMethods)) {
+                if (in_array($method->getName(), $enumMethods, true)) {
                     continue;
                 }
             }
 
             $docComment = $method->getDocComment();
-            $docTags = $this->extractDocTags($docComment);
+            $docTags    = $this->extractDocTags($docComment);
 
             $sig = '';
             if ($method->isStatic()) {
                 $sig .= 'static ';
             }
-            $sig .= $method->getName() . '(';
+            $sig .= $method->getName().'(';
             $sig .= $this->formatParameters($method, $docTags['params']);
             $sig .= ')';
 
             if ($method->hasReturnType()) {
-                $sig .= ': ' . $this->getTypeString($method->getReturnType());
+                $sig .= ': '.$this->getTypeString($method->getReturnType());
             }
 
             // Append brief doc summary if available
             $doc = $this->extractSummary($docComment);
             if ($doc !== null) {
-                $sig .= ' — ' . $doc;
+                $sig .= ' — '.$doc;
             }
 
             // Append @throws if present
             if (!empty($docTags['throws'])) {
-                $sig .= ' @throws ' . implode('|', $docTags['throws']);
+                $sig .= ' @throws '.implode('|', $docTags['throws']);
             }
 
             $result[] = $sig;
         }
+
         return $result;
     }
 
+    /** @param array<string, string> $paramDocs */
     private function formatParameters(ReflectionMethod $method, array $paramDocs = []): string
     {
         $params = [];
         foreach ($method->getParameters() as $param) {
             $p = '';
             if ($param->hasType()) {
-                $p .= $this->getTypeString($param->getType()) . ' ';
+                $p .= $this->getTypeString($param->getType()).' ';
             }
             if ($param->isVariadic()) {
                 $p .= '...';
             }
-            $p .= '$' . $param->getName();
+            $p .= '$'.$param->getName();
 
             if ($param->isOptional() && !$param->isVariadic()) {
                 if ($param->isDefaultValueAvailable()) {
                     try {
                         $default = $param->getDefaultValue();
-                        $p .= ' = ' . $this->formatDefaultValue($default);
-                    } catch (\Throwable) {
+                        $p .= ' = '.$this->formatDefaultValue($default);
+                    } catch (Throwable) {
                         // BetterReflection can't resolve complex expressions
                         $p .= ' = ...';
                     }
@@ -406,13 +435,14 @@ class ApiExtractor
             }
 
             // Append @param description if available
-            $paramKey = '$' . $param->getName();
+            $paramKey = '$'.$param->getName();
             if (isset($paramDocs[$paramKey])) {
-                $p .= ' /*' . $paramDocs[$paramKey] . '*/';
+                $p .= ' /*'.$paramDocs[$paramKey].'*/';
             }
 
             $params[] = $p;
         }
+
         return implode(', ', $params);
     }
 
@@ -428,11 +458,12 @@ class ApiExtractor
             return 'false';
         }
         if (is_string($value)) {
-            return "'" . addslashes($value) . "'";
+            return "'".addslashes($value)."'";
         }
         if (is_array($value)) {
             return '[]';
         }
+
         return (string) $value;
     }
 
@@ -440,15 +471,16 @@ class ApiExtractor
     {
         if ($type instanceof ReflectionNamedType) {
             $name = $type->getName();
-            return $type->allowsNull() && $name !== 'mixed' ? '?' . $name : $name;
+
+            return $type->allowsNull() && $name !== 'mixed' ? '?'.$name : $name;
         }
 
         if ($type instanceof ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => (string) $t, $type->getTypes()));
+            return implode('|', array_map(fn ($t) => (string) $t, $type->getTypes()));
         }
 
         if ($type instanceof ReflectionIntersectionType) {
-            return implode('&', array_map(fn($t) => (string) $t, $type->getTypes()));
+            return implode('&', array_map(fn ($t) => (string) $t, $type->getTypes()));
         }
 
         return (string) $type;
@@ -456,7 +488,8 @@ class ApiExtractor
 
     /**
      * Parse @throws and @param tags from a docblock.
-     * Returns ['throws' => [...], 'params' => ['$name' => 'description', ...]]
+     *
+     * @return array{throws: list<string>, params: array<string, string>}
      */
     private function extractDocTags(?string $docblock): array
     {
@@ -479,7 +512,7 @@ class ApiExtractor
         // Extract @param Type $name Description
         if (preg_match_all('/@param\s+\S+\s+\$(\w+)\s+(.+)/m', $cleaned, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $m) {
-                $result['params']['$' . $m[1]] = trim($m[2]);
+                $result['params']['$'.$m[1]] = trim($m[2]);
             }
         }
 
@@ -506,7 +539,7 @@ class ApiExtractor
         }
 
         // Take everything before the first @tag or blank line
-        $lines = preg_split('/\n/', $cleaned);
+        $lines   = explode("\n", $cleaned);
         $summary = [];
         foreach ($lines as $line) {
             $trimmed = trim($line);
@@ -533,7 +566,7 @@ class ApiExtractor
 
     public function toJson(): string
     {
-        return json_encode($this->apiMap, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        return json_encode($this->apiMap, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
     }
 
     public function saveToFile(string $filepath): void
