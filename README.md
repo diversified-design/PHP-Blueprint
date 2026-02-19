@@ -153,6 +153,87 @@ Includes `private` and `protected` members.
 
 **Use for:** Internal refactoring analysis, understanding implementation details, migration planning.
 
+## Writing Code That Blueprints Well
+
+Blueprint extracts what's in your source — it can't invent context that isn't there. The more information your code carries in its signatures and docblocks, the more useful the blueprint is to an LLM agent. Here's what matters most:
+
+### Type everything
+
+Blueprint captures parameter types, return types, and property types. An untyped `$options` parameter is a black box; `array $options` is slightly better; a docblock with `@param array{timeout: int, retries: int} $options` would be ideal — though Blueprint currently captures only the native type hint, not the PHPStan shape (yet).
+
+```php
+// Weak — agent has to guess
+function fetch($url, $options) { ... }
+
+// Strong — agent knows the contract
+function fetch(string $url, array $options = [], int $timeout = 30): Response { ... }
+```
+
+### Write summary docblocks
+
+Blueprint extracts the **first paragraph** of each class and method docblock (everything before the first `@tag` or blank line). This becomes the `— description` in the output. One or two sentences that explain *what* the method does and *when* you'd use it:
+
+```php
+/**
+ * Atomically write content to a file using a temp-file-and-rename strategy.
+ *
+ * Detailed implementation notes go here — Blueprint ignores
+ * everything after the first blank line or @tag.
+ */
+public function dumpFile(string $filename, string $content): void
+```
+
+### Document parameters with `@param`
+
+Blueprint extracts `@param` descriptions and appends them as inline comments next to each parameter. This is especially valuable for parameters whose purpose isn't obvious from the type alone:
+
+```php
+/**
+ * @param int $mode The new file mode (octal, e.g. 0755)
+ * @param bool $recursive Whether to apply recursively to subdirectories
+ */
+public function chmod(string $path, int $mode, bool $recursive = false): void
+```
+
+In the blueprint, this becomes:
+```
+"chmod(string $path, int $mode /*The new file mode (octal, e.g. 0755)*/, bool $recursive = false /*Whether to apply recursively to subdirectories*/): void"
+```
+
+### Declare `@throws`
+
+Blueprint appends `@throws` types to method signatures. This tells agents which exceptions to handle:
+
+```php
+/**
+ * @throws FileNotFoundException
+ * @throws IOException
+ */
+public function copy(string $origin, string $target): void
+```
+
+### Use meaningful names
+
+Parameter names appear directly in the blueprint. `$baseDirectory` communicates more than `$dir`. `$overwriteNewerFiles` communicates more than `$force`. Since the blueprint may be the *only* context an agent has, every name carries weight.
+
+### Use constants and enums
+
+Blueprint extracts constant names and values, and enum cases with their backing values. Well-named constants tell an agent what valid states and options exist:
+
+```php
+const STATUS_PENDING = 'pending';
+const STATUS_ACTIVE  = 'active';
+
+enum Suit: string {
+    case Hearts   = 'H';
+    case Diamonds = 'D';
+}
+```
+
+### Define clear interfaces
+
+Blueprint captures the full class hierarchy — `extends`, `implements`, and `uses`. Well-defined interfaces and abstract classes give agents the contract to code against without needing to read implementations.
+
 ## How It Works
 
 Blueprint uses **static analysis** via [BetterReflection](https://github.com/Roave/BetterReflection) (which builds on `nikic/php-parser`) to extract class signatures. No code is executed — source files are parsed, not loaded. This means:
