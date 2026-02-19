@@ -3,12 +3,12 @@
     "description": "Generates a JSON blueprint of a PHP library's class signatures — optimised for LLM context.",
     "type": "library",
     "license": "MIT",
-    "require": {
-        "php": ">=8.2",
-        "symfony/console": "^8.0",
-        "symfony/filesystem": "^8.0",
-        "roave/better-reflection": "^6.0"
-    },
+    "authors": [
+        {
+            "name": "Boris Anthony",
+            "email": "contact@diversified.design"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Blueprint\\": "src/"
@@ -17,12 +17,12 @@
     "bin": [
         "bin/blueprint"
     ],
-    "authors": [
-        {
-            "name": "Boris Anthony",
-            "email": "contact@diversified.design"
-        }
-    ],
+    "require": {
+        "php": ">=8.2",
+        "symfony/console": "^8.0",
+        "symfony/filesystem": "^8.0",
+        "roave/better-reflection": "^6.0"
+    },
     "require-dev": {
         "pestphp/pest": "^4.4",
         "friendsofphp/php-cs-fixer": "^3.94",
@@ -31,7 +31,10 @@
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
-        }
+        },
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "apcu-autoloader": true
     },
     "scripts": {
         "cs": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix --dry-run",
