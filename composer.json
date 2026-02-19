@@ -1,6 +1,6 @@
 {
     "name": "diversified-design/php-blueprint",
-    "description": "Generates a JSON blueprint of a PHP library's class signatures — optimised for LLM context.",
+    "description": "Generates a JSON blueprint of a PHP library's class signatures — optimised for coding-agent contexts.",
     "type": "library",
     "license": "MIT",
     "authors": [
