@@ -1,0 +1,14 @@
+{
+    "Blueprint\\BlueprintGenerator": {
+        "doc": "PHP Blueprint — BlueprintGenerator Generates a JSON blueprint of a PHP library's class signatures via static analysis (no code execution), suitable for LLM context.",
+        "methods": [
+            "__construct(string $namespaceFilter = '', bool $publicOnly = true, bool $skipInternal = true, bool $shortDocs = false, int $compactEnumsThreshold = 0)",
+            "extractFromDirectory(string $directory): array — Extract class signatures from a directory of PHP files.",
+            "toJson(): string",
+            "saveToFile(string $filepath): void"
+        ]
+    },
+    "Blueprint\\Command\\ExtractCommand": {
+        "extends": "Symfony\\Component\\Console\\Command\\Command"
+    }
+}

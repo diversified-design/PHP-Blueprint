@@ -37,15 +37,16 @@
         "apcu-autoloader": true
     },
     "scripts": {
+        "blueprint": "./bin/blueprint src/ --namespace=Blueprint -o blueprint.json",
         "cs": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix --dry-run",
         "cs:fix": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix",
-        "stan": "phpstan analyse",
         "post-update-cmd": [
             "composer dump-autoload -o"
         ],
         "post-install-cmd": [
             "composer dump-autoload -o"
         ],
+        "stan": "phpstan analyse",
         "test": "./vendor/bin/pest"
     }
 }
