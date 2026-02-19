@@ -15,12 +15,12 @@ class NoDocblockClass
     public function __construct(string $name, string $id = 'default')
     {
         $this->name = $name;
-        $this->id = $id;
+        $this->id   = $id;
     }
 
     public function greet(): string
     {
-        return 'Hello, ' . $this->name;
+        return 'Hello, '.$this->name;
     }
 
     public function withDefaults(

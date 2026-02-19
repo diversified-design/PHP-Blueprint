@@ -24,9 +24,9 @@ test('command succeeds with valid path', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_cmd_');
 
     $tester->execute([
-        'path' => fixturesPath(),
+        'path'        => fixturesPath(),
         '--namespace' => 'TestFixtures',
-        '--output' => $output,
+        '--output'    => $output,
         '--no-config' => true,
     ]);
 
@@ -44,7 +44,7 @@ test('command fails with non-existent directory', function () {
     $tester = createCommandTester();
 
     $tester->execute([
-        'path' => '/nonexistent/path/here',
+        'path'        => '/nonexistent/path/here',
         '--no-config' => true,
     ]);
 
@@ -78,9 +78,9 @@ test('--namespace filters output', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_ns_');
 
     $tester->execute([
-        'path' => fixturesPath(),
+        'path'        => fixturesPath(),
         '--namespace' => 'TestFixtures\\Internal',
-        '--output' => $output,
+        '--output'    => $output,
         '--no-config' => true,
     ]);
 
@@ -96,14 +96,14 @@ test('--include-private includes non-public members', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_priv_');
 
     $tester->execute([
-        'path' => fixturesPath(),
-        '--namespace' => 'TestFixtures',
-        '--output' => $output,
+        'path'              => fixturesPath(),
+        '--namespace'       => 'TestFixtures',
+        '--output'          => $output,
         '--include-private' => true,
-        '--no-config' => true,
+        '--no-config'       => true,
     ]);
 
-    $data = json_decode(file_get_contents($output), true);
+    $data    = json_decode(file_get_contents($output), true);
     $methods = implode("\n", $data['TestFixtures\\SimpleClass']['methods']);
 
     expect($methods)->toContain('protectedMethod')
@@ -117,11 +117,11 @@ test('--short-docs truncates summaries', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_short_');
 
     $tester->execute([
-        'path' => fixturesPath(),
-        '--namespace' => 'TestFixtures',
-        '--output' => $output,
+        'path'         => fixturesPath(),
+        '--namespace'  => 'TestFixtures',
+        '--output'     => $output,
         '--short-docs' => true,
-        '--no-config' => true,
+        '--no-config'  => true,
     ]);
 
     expect($tester->getStatusCode())->toBe(0);
@@ -137,12 +137,12 @@ test('--exclude filters out namespace prefixes', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_excl_');
 
     $tester->execute([
-        'path' => fixturesPath(),
-        '--namespace' => 'TestFixtures',
+        'path'               => fixturesPath(),
+        '--namespace'        => 'TestFixtures',
         '--include-internal' => true,
-        '--exclude' => ['TestFixtures\\Internal\\'],
-        '--output' => $output,
-        '--no-config' => true,
+        '--exclude'          => ['TestFixtures\\Internal\\'],
+        '--output'           => $output,
+        '--no-config'        => true,
     ]);
 
     $data = json_decode(file_get_contents($output), true);
@@ -157,14 +157,14 @@ test('--compact-enums truncates large constant lists', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_compact_');
 
     $tester->execute([
-        'path' => fixturesPath(),
-        '--namespace' => 'TestFixtures',
-        '--output' => $output,
+        'path'            => fixturesPath(),
+        '--namespace'     => 'TestFixtures',
+        '--output'        => $output,
         '--compact-enums' => true,
-        '--no-config' => true,
+        '--no-config'     => true,
     ]);
 
-    $data = json_decode(file_get_contents($output), true);
+    $data   = json_decode(file_get_contents($output), true);
     $consts = $data['TestFixtures\\ManyConstants']['constants'];
 
     expect($consts)->toHaveKey('...');
@@ -177,15 +177,15 @@ test('--compact-enums truncates large constant lists', function () {
 // ===========================================================================
 
 test('command reads config file when present', function () {
-    $tmpDir = sys_get_temp_dir() . '/bp_config_test_' . uniqid();
+    $tmpDir = sys_get_temp_dir().'/bp_config_test_'.uniqid();
     mkdir($tmpDir, 0755, true);
 
     // Write a config file
-    $configContent = "<?php\nreturn [\n    'path' => '" . addslashes(fixturesPath()) . "',\n    'namespace' => 'TestFixtures',\n    'output' => '{$tmpDir}/out.json',\n];\n";
-    file_put_contents($tmpDir . '/blueprint.config.php', $configContent);
+    $configContent = "<?php\nreturn [\n    'path' => '".addslashes(fixturesPath())."',\n    'namespace' => 'TestFixtures',\n    'output' => '{$tmpDir}/out.json',\n];\n";
+    file_put_contents($tmpDir.'/blueprint.config.php', $configContent);
 
     $tester = createCommandTester();
-    $cwd = getcwd();
+    $cwd    = getcwd();
     chdir($tmpDir);
 
     $tester->execute([]);
@@ -193,22 +193,22 @@ test('command reads config file when present', function () {
     chdir($cwd);
 
     expect($tester->getStatusCode())->toBe(0);
-    expect(file_exists($tmpDir . '/out.json'))->toBeTrue();
+    expect(file_exists($tmpDir.'/out.json'))->toBeTrue();
 
     // Clean up
-    unlink($tmpDir . '/out.json');
-    unlink($tmpDir . '/blueprint.config.php');
+    unlink($tmpDir.'/out.json');
+    unlink($tmpDir.'/blueprint.config.php');
     rmdir($tmpDir);
 });
 
 test('--config loads explicit config file', function () {
-    $tmpDir = sys_get_temp_dir() . '/bp_explicit_config_' . uniqid();
+    $tmpDir = sys_get_temp_dir().'/bp_explicit_config_'.uniqid();
     mkdir($tmpDir, 0755, true);
 
-    $configPath = $tmpDir . '/custom.config.php';
-    $outputPath = $tmpDir . '/result.json';
+    $configPath = $tmpDir.'/custom.config.php';
+    $outputPath = $tmpDir.'/result.json';
 
-    $configContent = "<?php\nreturn [\n    'path' => '" . addslashes(fixturesPath()) . "',\n    'namespace' => 'TestFixtures',\n    'output' => '" . addslashes($outputPath) . "',\n];\n";
+    $configContent = "<?php\nreturn [\n    'path' => '".addslashes(fixturesPath())."',\n    'namespace' => 'TestFixtures',\n    'output' => '".addslashes($outputPath)."',\n];\n";
     file_put_contents($configPath, $configContent);
 
     $tester = createCommandTester();
@@ -237,15 +237,15 @@ test('--config with non-existent file fails', function () {
 });
 
 test('--no-config ignores config file', function () {
-    $tmpDir = sys_get_temp_dir() . '/bp_noconfig_test_' . uniqid();
+    $tmpDir = sys_get_temp_dir().'/bp_noconfig_test_'.uniqid();
     mkdir($tmpDir, 0755, true);
 
     // Write a config that would set path — but --no-config should ignore it
-    $configContent = "<?php\nreturn ['path' => '" . addslashes(fixturesPath()) . "'];\n";
-    file_put_contents($tmpDir . '/blueprint.config.php', $configContent);
+    $configContent = "<?php\nreturn ['path' => '".addslashes(fixturesPath())."'];\n";
+    file_put_contents($tmpDir.'/blueprint.config.php', $configContent);
 
     $tester = createCommandTester();
-    $cwd = getcwd();
+    $cwd    = getcwd();
     chdir($tmpDir);
 
     $tester->execute([
@@ -259,7 +259,7 @@ test('--no-config ignores config file', function () {
     expect($tester->getDisplay())->toContain('No path provided');
 
     // Clean up
-    unlink($tmpDir . '/blueprint.config.php');
+    unlink($tmpDir.'/blueprint.config.php');
     rmdir($tmpDir);
 });
 
@@ -272,9 +272,9 @@ test('command reports class count and file size', function () {
     $output = tempnam(sys_get_temp_dir(), 'bp_report_');
 
     $tester->execute([
-        'path' => fixturesPath(),
+        'path'        => fixturesPath(),
         '--namespace' => 'TestFixtures',
-        '--output' => $output,
+        '--output'    => $output,
         '--no-config' => true,
     ]);
 

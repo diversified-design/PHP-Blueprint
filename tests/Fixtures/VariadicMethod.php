@@ -8,7 +8,7 @@ class VariadicMethod
 {
     public function withVariadic(string $first, string ...$rest): string
     {
-        return $first . implode('', $rest);
+        return $first.implode('', $rest);
     }
 
     /**

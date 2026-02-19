@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace TestFixtures;
 
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
  * Class with rich PHPStan docblock types for testing type extraction.
  */
@@ -21,8 +24,8 @@ class DocblockRichClass
      * @param array{name: string, age: int, active: bool} $item The structured item to process
      * @param list<string> $filters Optional filter list
      * @return array<string, mixed>
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function processItem(array $item, array $filters = []): array
     {

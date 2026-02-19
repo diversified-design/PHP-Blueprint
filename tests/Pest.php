@@ -24,5 +24,5 @@ declare(strict_types=1);
 
 function fixturesPath(): string
 {
-    return __DIR__ . '/Fixtures';
+    return __DIR__.'/Fixtures';
 }

@@ -21,7 +21,7 @@ class SimpleClass
 
     public function __construct(string $name, int $count = 0)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->count = $count;
     }
 
