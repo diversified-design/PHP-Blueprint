@@ -159,13 +159,17 @@ Blueprint extracts what's in your source — it can't invent context that isn't 
 
 ### Type everything
 
-Blueprint captures parameter types, return types, and property types. An untyped `$options` parameter is a black box; `array $options` is slightly better; a docblock with `@param array{timeout: int, retries: int} $options` would be ideal — though Blueprint currently captures only the native type hint, not the PHPStan shape (yet).
+Blueprint captures parameter types, return types, and property types. When a PHPStan/Psalm `@param`, `@return`, or `@var` docblock type is present, Blueprint uses it instead of the native type hint — giving agents the full picture.
 
 ```php
 // Weak — agent has to guess
 function fetch($url, $options) { ... }
 
-// Strong — agent knows the contract
+// Better — agent knows the basic types
+function fetch(string $url, array $options = [], int $timeout = 30): Response { ... }
+
+// Best — agent knows the exact shape
+/** @param array{timeout: int, retries: int, base_uri: string} $options */
 function fetch(string $url, array $options = [], int $timeout = 30): Response { ... }
 ```
 

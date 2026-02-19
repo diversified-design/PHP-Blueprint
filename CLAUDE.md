@@ -2,6 +2,8 @@
 
 A Composer package (`diversified-design/php-blueprint`) that generates a JSON blueprint of a PHP library's class signatures, optimised for LLM context. The equivalent of TypeScript `.d.ts` files — the public contract without implementation noise.
 
+Always read `./blueprint.json` for the library's own latest signature blueprint. 
+
 ## Project Structure
 
 ```
