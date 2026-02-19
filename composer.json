@@ -20,7 +20,29 @@
     "authors": [
         {
             "name": "Boris Anthony",
-            "email": "964649+BorisAnthony@users.noreply.github.com"
+            "email": "contact@diversified.design"
         }
-    ]
+    ],
+    "require-dev": {
+        "pestphp/pest": "^4.4",
+        "friendsofphp/php-cs-fixer": "^3.94",
+        "phpstan/phpstan": "^2.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "cs": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix --dry-run",
+        "cs:fix": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix",
+        "stan": "phpstan analyse",
+        "post-update-cmd": [
+            "composer dump-autoload -o"
+        ],
+        "post-install-cmd": [
+            "composer dump-autoload -o"
+        ],
+        "test": "./vendor/bin/pest"
+    }
 }

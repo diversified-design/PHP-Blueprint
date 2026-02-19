@@ -2,3 +2,4 @@ _dev
 .claude/
 settings.local.json
 vendor/
+.php-cs-fixer.cache
