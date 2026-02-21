@@ -6,7 +6,7 @@
             "extractFromDirectory(string $directory): array<string, array<string, mixed>> — Extracts class signatures from a directory of PHP files.",
             "toJson(): string",
             "toToon(): string",
-            "saveToFile(string $filepath): void"
+            "saveToFile(string $filepath, ('json' | 'toon' | 'both') $format = 'json'): void"
         ]
     },
     "Blueprint\\Command\\ExtractCommand": {

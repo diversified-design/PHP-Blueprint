@@ -32,6 +32,7 @@ class ExtractCommand extends Command
             ->addOption('include-internal', null, InputOption::VALUE_NONE, 'Include \\Internal\\ namespace classes')
             ->addOption('short-docs', null, InputOption::VALUE_NONE, 'Truncate doc summaries to first sentence')
             ->addOption('compact-enums', null, InputOption::VALUE_NONE, 'Truncate large constant/enum lists (>5 entries)')
+            ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Output format: json, toon (experimental), or both', 'json')
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Path to config file')
             ->addOption('no-config', null, InputOption::VALUE_NONE, 'Ignore config file');
     }
@@ -69,6 +70,19 @@ class ExtractCommand extends Command
         $includeInt   = $this->resolveFlag($input, 'include-internal', $config);
         $shortDocs    = $this->resolveFlag($input, 'short-docs', $config);
         $compactEnums = $this->resolveFlag($input, 'compact-enums', $config);
+        $format       = $this->resolve($input, 'format', $config, 'json');
+
+        $validFormats = ['json', 'toon', 'both'];
+        if (!in_array($format, $validFormats, true)) {
+            $output->writeln('<error>Invalid --format value: "'.$format.'". Must be one of: '.implode(', ', $validFormats).'</error>');
+
+            return Command::FAILURE;
+        }
+
+        // When format is toon-only and the user didn't explicitly set -o, swap the default extension
+        if ($format === 'toon' && $outputPath === 'blueprint.json') {
+            $outputPath = 'blueprint.toon';
+        }
 
         // Merge exclude lists from CLI and config
         /** @var list<string> $cliExclude */
@@ -87,11 +101,20 @@ class ExtractCommand extends Command
         $apiMap = $generator->extractFromDirectory($libraryPath);
 
         $resolvedOutput = Path::canonicalize($outputPath);
-        $generator->saveToFile($resolvedOutput);
+        $generator->saveToFile($resolvedOutput, $format);
 
-        $size = filesize($resolvedOutput);
-        $unit = $size > 1024 ? round($size / 1024, 1).'KB' : $size.'B';
-        $output->writeln("Extracted ".count($apiMap)." classes → {$resolvedOutput} ({$unit})");
+        $classCount = count($apiMap);
+
+        if ($format === 'both') {
+            $jsonPath = preg_replace('/\.toon$/', '.json', $resolvedOutput);
+            $toonPath = preg_replace('/\.json$/', '.toon', $resolvedOutput);
+            $jsonSize = $this->formatSize(filesize($jsonPath));
+            $toonSize = $this->formatSize(filesize($toonPath));
+            $output->writeln("Extracted {$classCount} classes → {$jsonPath} ({$jsonSize}, JSON) + {$toonPath} ({$toonSize}, TOON)");
+        } else {
+            $size = $this->formatSize(filesize($resolvedOutput));
+            $output->writeln("Extracted {$classCount} classes → {$resolvedOutput} ({$size}, ".strtoupper($format).')');
+        }
 
         return Command::SUCCESS;
     }
@@ -167,5 +190,14 @@ class ExtractCommand extends Command
         $configKey = $option;
 
         return (bool) ($config[$configKey] ?? false);
+    }
+
+    private function formatSize(int|false $bytes): string
+    {
+        if ($bytes === false) {
+            return '0B';
+        }
+
+        return $bytes > 1024 ? round($bytes / 1024, 1).'KB' : $bytes.'B';
     }
 }

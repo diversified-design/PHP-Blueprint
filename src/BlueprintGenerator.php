@@ -662,14 +662,22 @@ class BlueprintGenerator
         return Toon::encode($this->apiMap, $options);
     }
 
-    public function saveToFile(string $filepath): void
+    /**
+     * @param 'json'|'toon'|'both' $format
+     */
+    public function saveToFile(string $filepath, string $format = 'json'): void
     {
         $fs = new Filesystem();
-        $fs->dumpFile($filepath, $this->toJson());
-        
-        // TOON format output
-        $toonPath = preg_replace('/\.json$/', '.toon', $filepath);
-        $fs->dumpFile($toonPath, $this->toToon());
 
+        if ($format === 'both') {
+            $jsonPath = preg_replace('/\.toon$/', '.json', $filepath);
+            $toonPath = preg_replace('/\.json$/', '.toon', $filepath);
+            $fs->dumpFile($jsonPath, $this->toJson());
+            $fs->dumpFile($toonPath, $this->toToon());
+
+            return;
+        }
+
+        $fs->dumpFile($filepath, $format === 'toon' ? $this->toToon() : $this->toJson());
     }
 }
