@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Blueprint;
 
+use HelgeSverre\Toon\Toon;
+use HelgeSverre\Toon\EncodeOptions;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
@@ -651,9 +653,23 @@ class BlueprintGenerator
         return json_encode($this->apiMap, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
     }
 
+    public function toToon(): string
+    {
+        $options = new EncodeOptions(
+            indent: 4,         // 2 == default
+            // delimiter: "\t"    // , == default
+        );
+        return Toon::encode($this->apiMap, $options);
+    }
+
     public function saveToFile(string $filepath): void
     {
         $fs = new Filesystem();
         $fs->dumpFile($filepath, $this->toJson());
+        
+        // TOON format output
+        $toonPath = preg_replace('/\.json$/', '.toon', $filepath);
+        $fs->dumpFile($toonPath, $this->toToon());
+
     }
 }

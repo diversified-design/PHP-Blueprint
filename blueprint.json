@@ -1,10 +1,11 @@
 {
     "Blueprint\\BlueprintGenerator": {
-        "doc": "PHP Blueprint — BlueprintGenerator Generates a JSON blueprint of a PHP library's class signatures via static analysis (no code execution), suitable for LLM context.",
+        "doc": "Generates a JSON blueprint of a PHP library's class signatures via static analysis (no code execution), suitable for LLM context.",
         "methods": [
             "__construct(string $namespaceFilter = '', bool $publicOnly = true, bool $skipInternal = true, bool $shortDocs = false, int $compactEnumsThreshold = 0, list<string> $excludeNamespaces = [])",
-            "extractFromDirectory(string $directory): array<string, array<string, mixed>> — Extract class signatures from a directory of PHP files.",
+            "extractFromDirectory(string $directory): array<string, array<string, mixed>> — Extracts class signatures from a directory of PHP files.",
             "toJson(): string",
+            "toToon(): string",
             "saveToFile(string $filepath): void"
         ]
     },
