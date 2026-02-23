@@ -659,6 +659,7 @@ class BlueprintGenerator
             indent: 4,         // 2 == default
             // delimiter: "\t"    // , == default
         );
+
         return Toon::encode($this->apiMap, $options);
     }
 

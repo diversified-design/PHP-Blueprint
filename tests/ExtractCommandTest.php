@@ -182,7 +182,7 @@ test('command reads config file when present', function () {
 
     // Write a config file
     $configContent = "<?php\nreturn [\n    'path' => '".addslashes(fixturesPath())."',\n    'namespace' => 'TestFixtures',\n    'output' => '{$tmpDir}/out.json',\n];\n";
-    file_put_contents($tmpDir.'/blueprint.config.php', $configContent);
+    file_put_contents($tmpDir.'/.blueprint.config.php', $configContent);
 
     $tester = createCommandTester();
     $cwd    = getcwd();
@@ -197,7 +197,7 @@ test('command reads config file when present', function () {
 
     // Clean up
     unlink($tmpDir.'/out.json');
-    unlink($tmpDir.'/blueprint.config.php');
+    unlink($tmpDir.'/.blueprint.config.php');
     rmdir($tmpDir);
 });
 
@@ -242,7 +242,7 @@ test('--no-config ignores config file', function () {
 
     // Write a config that would set path — but --no-config should ignore it
     $configContent = "<?php\nreturn ['path' => '".addslashes(fixturesPath())."'];\n";
-    file_put_contents($tmpDir.'/blueprint.config.php', $configContent);
+    file_put_contents($tmpDir.'/.blueprint.config.php', $configContent);
 
     $tester = createCommandTester();
     $cwd    = getcwd();
@@ -259,7 +259,7 @@ test('--no-config ignores config file', function () {
     expect($tester->getDisplay())->toContain('No path provided');
 
     // Clean up
-    unlink($tmpDir.'/blueprint.config.php');
+    unlink($tmpDir.'/.blueprint.config.php');
     rmdir($tmpDir);
 });
 

@@ -56,7 +56,7 @@ vendor/bin/blueprint src/ \
 
 ## Configuration
 
-Create a `blueprint.config.php` in your project root:
+Create a `.blueprint.config.php` in your project root:
 
 ```php
 <?php

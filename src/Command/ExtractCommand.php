@@ -19,7 +19,7 @@ use Symfony\Component\Filesystem\Path;
 )]
 class ExtractCommand extends Command
 {
-    private const CONFIG_FILENAME = 'blueprint.config.php';
+    private const CONFIG_FILENAME = '.blueprint.config.php';
 
     protected function configure(): void
     {

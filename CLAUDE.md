@@ -10,7 +10,7 @@ Always read `./blueprint.json` for the library's own latest signature blueprint.
 bin/blueprint                    — CLI entry point (symfony/console)
 src/BlueprintGenerator.php       — Core extraction logic (Blueprint\BlueprintGenerator)
 src/Command/ExtractCommand.php   — CLI command (Blueprint\Command\ExtractCommand)
-blueprint.config.php             — Optional project config (PHP array, auto-discovered in cwd)
+.blueprint.config.php             — Optional project config (PHP array, auto-discovered in cwd)
 examples/                        — Sample output files
 ```
 
