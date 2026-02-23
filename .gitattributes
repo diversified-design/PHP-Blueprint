@@ -1,0 +1,16 @@
+.gitattributes          export-ignore
+.gitignore              export-ignore
+.github/                export-ignore
+
+.claude/                export-ignore
+.serena/                export-ignore
+CLAUDE.md               export-ignore
+
+.blueprint.config.php   export-ignore
+.php-cs-fixer.php       export-ignore
+phpunit.xml             export-ignore
+phpunit.xml.dist        export-ignore
+phpstan.neon            export-ignore
+
+examples/               export-ignore
+tests/                  export-ignore
