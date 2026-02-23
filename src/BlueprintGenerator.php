@@ -660,7 +660,46 @@ class BlueprintGenerator
             // delimiter: "\t"    // , == default
         );
 
-        return Toon::encode($this->apiMap, $options);
+        return Toon::encode($this->sanitizeForToon($this->apiMap), $options);
+    }
+
+    /**
+     * Replace all control characters found in the codebase being documented
+     *     with their PHP escape-sequence representation.
+     * TOON only allows \n, \r, \t as literal control chars, but since the blueprint
+     * documents source values (e.g. enum backing values), we escape those too so they
+     * appear as readable sequences rather than invisible formatting.
+     */
+    private function sanitizeForToon(mixed $data): mixed
+    {
+        if (is_string($data)) {
+            // Replace unsupported control chars with visible escape sequences
+            return preg_replace_callback('/[\x00-\x1F\x7F\x{0085}\x{2028}\x{2029}]/u', function (array $m): string {
+                $codepoint = mb_ord($m[0], 'UTF-8');
+
+                return match ($codepoint) {
+                    0x09 => '\t',
+                    0x0A => '\n',
+                    0x0B => '\v',
+                    0x0C => '\f',
+                    0x0D => '\r',
+                    0x1B => '\e',
+                    default => sprintf('\u{%04X}', $codepoint),
+                };
+            }, $data);
+        }
+
+        if (is_array($data)) {
+            $result = [];
+            foreach ($data as $key => $value) {
+                $key = is_string($key) ? $this->sanitizeForToon($key) : $key;
+                $result[$key] = $this->sanitizeForToon($value);
+            }
+
+            return $result;
+        }
+
+        return $data;
     }
 
     /**
