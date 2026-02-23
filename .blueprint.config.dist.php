@@ -37,4 +37,7 @@ return [
 
     // Truncate large constant/enum lists (>5 entries)
     'compact-enums' => false,
+
+    // Output format: 'json', 'toon' (experimental), or 'both'
+    'format' => 'json',
 ];

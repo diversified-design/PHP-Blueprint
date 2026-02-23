@@ -34,6 +34,7 @@ vendor/bin/blueprint src/ --namespace="Vendor\\Package" --short-docs
 vendor/bin/blueprint src/ \
   --namespace="Vendor\\Package" \
   -o blueprint.json \
+  -f json \
   --include-private \
   --include-internal \
   --short-docs \
@@ -51,6 +52,7 @@ vendor/bin/blueprint src/ \
 | `--include-internal` | | Include `\Internal\` namespace classes |
 | `--short-docs` | | Truncate doc summaries to first sentence |
 | `--compact-enums` | | Truncate large constant/enum lists (>5 entries) |
+| `--format` | `-f` | Output format: `json`, `toon` (experimental), or `both` (default: `json`) |
 | `--config` | `-c` | Path to config file |
 | `--no-config` | | Ignore config file |
 
@@ -64,6 +66,7 @@ Create a `.blueprint.config.php` in your project root:
 return [
     'path'             => 'src/',
     'output'           => 'blueprint.json',
+    'format'           => 'json',
     'namespace'        => 'Vendor\\Package',
     'exclude'          => [
         'Vendor\\Package\\Internal\\',
